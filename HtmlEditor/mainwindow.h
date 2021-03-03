@@ -18,8 +18,19 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event);
     void wheelEvent(QWheelEvent *event);
+    int saveInfo();
+
+private slots:
+    void on_actionNew_triggered();
+
+    void on_actionOpen_triggered();
+
+    void on_actionSave_triggered();
+
+    void on_actionSave_as_triggered();
 
 private:
     Ui::MainWindow *ui;
+    QString currentFile="";
 };
 #endif // MAINWINDOW_H
