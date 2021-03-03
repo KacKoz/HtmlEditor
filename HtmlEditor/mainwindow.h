@@ -15,6 +15,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+protected:
+    void resizeEvent(QResizeEvent *event);
+    void wheelEvent(QWheelEvent *event);
+
 private:
     Ui::MainWindow *ui;
 };
