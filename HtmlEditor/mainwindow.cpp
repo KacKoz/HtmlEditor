@@ -36,19 +36,17 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     }
     else if(!ui->treeView->isVisible())
     {
-    //    ui->treeView->setVisible(true);
+        ui->treeView->setVisible(true);
     }
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
-
-
     if(GetAsyncKeyState(VK_LCONTROL) & 0x81)
     {
         QFont f = ui->plainTextEdit->font();
         int size = f.pointSize();
-        size += event->angleDelta().y()/15;
+        size += event->angleDelta().y()/16;
         f.setPointSize(size);
         ui->plainTextEdit->setFont(f);
     }
@@ -138,3 +136,36 @@ void MainWindow::on_actionSave_triggered()
         on_actionSave_as_triggered();
     }
 }
+
+
+
+void MainWindow::on_actionCut_triggered()
+{
+    ui->plainTextEdit->cut();
+}
+
+void MainWindow::on_actionCopy_triggered()
+{
+    ui->plainTextEdit->copy();
+}
+
+void MainWindow::on_actionPaste_triggered()
+{
+    ui->plainTextEdit->paste();
+}
+
+void MainWindow::on_actionDelete_triggered()
+{
+    QTextCursor cur = ui->plainTextEdit->textCursor();
+    cur.removeSelectedText();
+}
+
+void MainWindow::on_actionUndo_triggered()
+{
+    ui->plainTextEdit->undo();
+}
+
+/*void MainWindow::on_plainTextEdit_textChanged()
+{
+    setWindowTitle(this->windowTitle()+"*");
+}*/
