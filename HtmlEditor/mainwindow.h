@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "codeeditor.h"
+#include "linenumberarea.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,7 +19,6 @@ public:
 
 protected:
     void resizeEvent(QResizeEvent *event);
-    void wheelEvent(QWheelEvent *event);
     void closeEvent(QCloseEvent *event);
     int saveInfo();
 
@@ -47,6 +48,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QString currentFile="";
+    CodeEditor *codeeditor;
+    LineNumberArea *lna;
     bool hasChanged = false;
 };
 #endif // MAINWINDOW_H

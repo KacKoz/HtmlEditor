@@ -3,6 +3,8 @@
 #include <windows.h>
 #include <winuser.h>
 
+#include <iostream>
+
 CodeEditor::CodeEditor()
 {
     QPalette pal;
@@ -21,8 +23,16 @@ void CodeEditor::wheelEvent(QWheelEvent *event)
         QFont f = this->font();
         int size = f.pointSize();
         size += event->angleDelta().y()/25;
-        if(size>5)
+        if(size>5 && size < 50)
+        {
             f.setPointSize(size);
+            emit fontSizeChanged(size);
+        }
         this->setFont(f);
     }
+}
+
+void CodeEditor::on_CodeEditor_textChanged()
+{
+    std::cout << "sakodn";
 }

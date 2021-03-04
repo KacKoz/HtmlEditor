@@ -19,6 +19,13 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     ui->setupUi(this);
+    codeeditor = new CodeEditor();
+    lna = new LineNumberArea();
+
+    connect(codeeditor, &CodeEditor::fontSizeChanged, lna, &LineNumberArea::handleFontSize);
+
+    ui->horizontalLayout->addWidget(lna);
+    ui->horizontalLayout->addWidget(codeeditor);
 
     this->setCentralWidget(ui->horizontalLayoutWidget);
     setWindowTitle("Untitled");
@@ -27,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete codeeditor;
+    delete lna;
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -41,18 +50,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     }
 }
 
-void MainWindow::wheelEvent(QWheelEvent *event)
-{
-    if(GetAsyncKeyState(VK_LCONTROL) & 0x81)
-    {
-        QFont f = ui->plainTextEdit->font();
-        int size = f.pointSize();
-        size += event->angleDelta().y()/16;
-        f.setPointSize(size);
-        ui->plainTextEdit->setFont(f);
-    }
-}
-
 
 void MainWindow::on_actionNew_triggered()
 {
@@ -63,7 +60,7 @@ void MainWindow::on_actionNew_triggered()
     }
     if(!isCanceled){
         currentFile.clear();
-        ui->plainTextEdit->setPlainText(QString());
+        codeeditor->setPlainText(QString());
         setWindowTitle("Untitled");
         if(hasChanged)
         hasChanged = false;
@@ -81,7 +78,7 @@ void MainWindow::on_actionOpen_triggered()
     }
     QTextStream in(&file);
     QString text = in.readAll();
-    ui->plainTextEdit->setPlainText(text);
+    codeeditor->setPlainText(text);
     hasChanged = false;
     setWindowTitle(filename);
     file.close();
@@ -124,7 +121,7 @@ void MainWindow::on_actionSave_as_triggered()
     currentFile=filename;
     setWindowTitle(filename);
     QTextStream out(&file);
-    QString text = ui->plainTextEdit->toPlainText();
+    QString text = codeeditor->toPlainText();
     out<<text;
     file.close();
 }
@@ -141,7 +138,7 @@ void MainWindow::on_actionSave_triggered()
             return;
         }
         QTextStream out(&file);
-        QString text = ui->plainTextEdit->toPlainText();
+        QString text = codeeditor->toPlainText();
         qDebug()<< text;
         out<<text;
     }
@@ -167,28 +164,28 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::on_actionCut_triggered()
 {
-    ui->plainTextEdit->cut();
+    codeeditor->cut();
 }
 
 void MainWindow::on_actionCopy_triggered()
 {
-    ui->plainTextEdit->copy();
+    codeeditor->copy();
 }
 
 void MainWindow::on_actionPaste_triggered()
 {
-    ui->plainTextEdit->paste();
+    codeeditor->paste();
 }
 
 void MainWindow::on_actionDelete_triggered()
 {
-    QTextCursor cur = ui->plainTextEdit->textCursor();
+    QTextCursor cur = codeeditor->textCursor();
     cur.removeSelectedText();
 }
 
 void MainWindow::on_actionUndo_triggered()
 {
-    ui->plainTextEdit->undo();
+    codeeditor->undo();
 }
 
 void MainWindow::on_plainTextEdit_textChanged()

@@ -11,9 +11,12 @@ public:
     explicit LineNumberArea(QWidget *parent = nullptr);
 
 public slots:
-    //void setFontSize(int size);
+    void handleFontSize(int size);
 
 signals:
+
+private:
+    void wheelEvent(QWheelEvent *event);
 
 };
 

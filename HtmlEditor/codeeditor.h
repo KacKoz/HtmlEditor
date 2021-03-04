@@ -14,6 +14,10 @@ public:
 signals:
     void fontSizeChanged(int size);
 
+
+private slots:
+    void on_CodeEditor_textChanged();
+
 private:
     void wheelEvent(QWheelEvent *event);
 };
