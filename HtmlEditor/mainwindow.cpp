@@ -115,6 +115,7 @@ void MainWindow::on_actionSave_as_triggered()
 {
     setWindowTitle(windowTitle().replace(0,1,""));
     hasChanged=false;
+    1;
     QString filename = QFileDialog::getSaveFileName(this,"Save as");
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly | QFile::Text)){
