@@ -46,5 +46,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QString currentFile="";
+    bool hasChanged = false;
 };
 #endif // MAINWINDOW_H

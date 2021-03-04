@@ -11,6 +11,7 @@
 #include <winuser.h>
 #include <iostream>
 #include<QDebug>
+#include <string>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -55,10 +56,17 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 
 void MainWindow::on_actionNew_triggered()
 {
-    bool isCancaled = saveInfo();
-    if(!isCancaled){
+    bool isCanceled = 0;
+    if(hasChanged)
+    {
+        isCanceled = saveInfo();
+    }
+    if(!isCanceled){
         currentFile.clear();
         ui->plainTextEdit->setPlainText(QString());
+        setWindowTitle("Untitled");
+        if(hasChanged)
+        hasChanged = false;
     }
 }
 
@@ -70,11 +78,12 @@ void MainWindow::on_actionOpen_triggered()
     if(!file.open(QIODevice::ReadWrite | QFile::Text)){
         QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
         return;
-    }
-    setWindowTitle(filename);
+    }  
     QTextStream in(&file);
     QString text = in.readAll();
     ui->plainTextEdit->setPlainText(text);
+    hasChanged = false;
+    setWindowTitle(filename);
     file.close();
 }
 
@@ -120,6 +129,7 @@ void MainWindow::on_actionSave_as_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
+    setWindowTitle(windowTitle().replace(0,1,""));
     qDebug()<<currentFile;
     if(currentFile !=""){
         QFile file(currentFile);
@@ -165,7 +175,11 @@ void MainWindow::on_actionUndo_triggered()
     ui->plainTextEdit->undo();
 }
 
-/*void MainWindow::on_plainTextEdit_textChanged()
+void MainWindow::on_plainTextEdit_textChanged()
 {
-    setWindowTitle(this->windowTitle()+"*");
-}*/
+    if(!hasChanged)
+    {
+        setWindowTitle("*"+this->windowTitle());
+    }
+    hasChanged=true;
+}
