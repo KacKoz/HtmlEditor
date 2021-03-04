@@ -7,11 +7,9 @@
 #include <QPlainTextEdit>
 #include <QTextStream>
 #include <QTreeView>
-#include <windows.h>
-#include <winuser.h>
+
 #include <iostream>
 #include<QDebug>
-#include <string>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,6 +17,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     ui->setupUi(this);
+    codeeditor = new CodeEditor();
+    lna = new LineNumberArea();
+
+    ui->horizontalLayout->addWidget(lna);
+    ui->horizontalLayout->addWidget(codeeditor);
 
     this->setCentralWidget(ui->horizontalLayoutWidget);
     setWindowTitle("Untitled");
@@ -41,32 +44,15 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     }
 }
 
-void MainWindow::wheelEvent(QWheelEvent *event)
-{
-    if(GetAsyncKeyState(VK_LCONTROL) & 0x81)
-    {
-        QFont f = ui->plainTextEdit->font();
-        int size = f.pointSize();
-        size += event->angleDelta().y()/16;
-        f.setPointSize(size);
-        ui->plainTextEdit->setFont(f);
-    }
-}
+
 
 
 void MainWindow::on_actionNew_triggered()
 {
-    bool isCanceled = 0;
-    if(hasChanged)
-    {
-        isCanceled = saveInfo();
-    }
-    if(!isCanceled){
+    bool isCancaled = saveInfo();
+    if(!isCancaled){
         currentFile.clear();
-        ui->plainTextEdit->setPlainText(QString());
-        setWindowTitle("Untitled");
-        if(hasChanged)
-        hasChanged = false;
+        codeeditor->setPlainText(QString());
     }
 }
 
@@ -78,12 +64,11 @@ void MainWindow::on_actionOpen_triggered()
     if(!file.open(QIODevice::ReadWrite | QFile::Text)){
         QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
         return;
-    }  
+    }
+    setWindowTitle(filename);
     QTextStream in(&file);
     QString text = in.readAll();
-    ui->plainTextEdit->setPlainText(text);
-    hasChanged = false;
-    setWindowTitle(filename);
+    codeeditor->setPlainText(text);
     file.close();
 }
 
@@ -97,7 +82,7 @@ int MainWindow::saveInfo() {
 
     switch (ret) {
       case QMessageBox::Save:
-          on_actionSave_triggered();
+          on_actionSave_as_triggered();
           return 0;
       case QMessageBox::Discard:
           // Don't Save was clicked
@@ -113,8 +98,6 @@ int MainWindow::saveInfo() {
 
 void MainWindow::on_actionSave_as_triggered()
 {
-    setWindowTitle(windowTitle().replace(0,1,""));
-    hasChanged=false;
     QString filename = QFileDialog::getSaveFileName(this,"Save as");
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly | QFile::Text)){
@@ -124,7 +107,7 @@ void MainWindow::on_actionSave_as_triggered()
     currentFile=filename;
     setWindowTitle(filename);
     QTextStream out(&file);
-    QString text = ui->plainTextEdit->toPlainText();
+    QString text = codeeditor->toPlainText();
     out<<text;
     file.close();
 }
@@ -133,15 +116,13 @@ void MainWindow::on_actionSave_triggered()
 {
     qDebug()<<currentFile;
     if(currentFile !=""){
-        setWindowTitle(windowTitle().replace(0,1,""));
-        hasChanged=false;
         QFile file(currentFile);
         if(!file.open(QIODevice::ReadWrite | QFile::Text)){
             QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
             return;
         }
         QTextStream out(&file);
-        QString text = ui->plainTextEdit->toPlainText();
+        QString text = codeeditor->toPlainText();
         qDebug()<< text;
         out<<text;
     }
@@ -152,50 +133,33 @@ void MainWindow::on_actionSave_triggered()
 
 
 
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-    bool isCanceled = 0;
-    if(hasChanged)
-    {
-        isCanceled = saveInfo();
-    }
-    if(isCanceled){
-        event->ignore();
-    }
-}
-
-
 void MainWindow::on_actionCut_triggered()
 {
-    ui->plainTextEdit->cut();
+    codeeditor->cut();
 }
 
 void MainWindow::on_actionCopy_triggered()
 {
-    ui->plainTextEdit->copy();
+    codeeditor->copy();
 }
 
 void MainWindow::on_actionPaste_triggered()
 {
-    ui->plainTextEdit->paste();
+    codeeditor->paste();
 }
 
 void MainWindow::on_actionDelete_triggered()
 {
-    QTextCursor cur = ui->plainTextEdit->textCursor();
+    QTextCursor cur = codeeditor->textCursor();
     cur.removeSelectedText();
 }
 
 void MainWindow::on_actionUndo_triggered()
 {
-    ui->plainTextEdit->undo();
+    codeeditor->undo();
 }
 
 void MainWindow::on_plainTextEdit_textChanged()
 {
-    if(!hasChanged)
-    {
-        setWindowTitle("*"+this->windowTitle());
-    }
-    hasChanged=true;
+    setWindowTitle("*" + this->windowTitle());
 }
