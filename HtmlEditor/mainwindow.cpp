@@ -23,6 +23,9 @@ MainWindow::MainWindow(QWidget *parent)
     lna = new LineNumberArea();
 
     connect(codeeditor, &CodeEditor::fontSizeChanged, lna, &LineNumberArea::handleFontSize);
+    connect(codeeditor, &QPlainTextEdit::textChanged, this, &MainWindow::on_plainTextEdit_textChanged);
+
+    //codeeditor->connect(codeeditor,SIGNAL("textchanged()"),qDebug()<<"jfdhg");
 
     ui->horizontalLayout->addWidget(lna);
     ui->horizontalLayout->addWidget(codeeditor);
@@ -53,12 +56,12 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::on_actionNew_triggered()
 {
-    bool isCanceled = 0;
+    int isCanceled = 1;
     if(hasChanged)
     {
         isCanceled = saveInfo();
     }
-    if(!isCanceled){
+    if(isCanceled and !(isCanceled==1 and hasChanged==true)){
         currentFile.clear();
         codeeditor->setPlainText(QString());
         setWindowTitle("Untitled");
@@ -69,19 +72,26 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionOpen_triggered()
 {
-    QString filename = QFileDialog::getOpenFileName(this,"Open the file");
-    QFile file(filename);
-    currentFile=filename;
-    if(!file.open(QIODevice::ReadWrite | QFile::Text)){
-        QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
-        return;
+    int isCanceled = 1;
+    if(hasChanged)
+    {
+        isCanceled = saveInfo();
     }
-    QTextStream in(&file);
-    QString text = in.readAll();
-    codeeditor->setPlainText(text);
-    hasChanged = false;
-    setWindowTitle(filename);
-    file.close();
+    if(isCanceled and !(isCanceled==1 and hasChanged==true)){
+        QString filename = QFileDialog::getOpenFileName(this,"Open the file");
+        QFile file(filename);
+        currentFile=filename;
+        if(!file.open(QIODevice::ReadWrite | QFile::Text)){
+            QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
+            return;
+        }
+        QTextStream in(&file);
+        QString text = in.readAll();
+        codeeditor->setPlainText(text);
+        hasChanged = false;
+        setWindowTitle(filename);
+        file.close();
+    }
 }
 
 int MainWindow::saveInfo() {
@@ -95,13 +105,13 @@ int MainWindow::saveInfo() {
     switch (ret) {
       case QMessageBox::Save:
           on_actionSave_triggered();
-          return 0;
+          return 1;
       case QMessageBox::Discard:
           // Don't Save was clicked
-          return 0;
+          return 2;
       case QMessageBox::Cancel:
           msgBox.close();
-          return 1;
+          return 0;
       default:
           return 0;
           break;
@@ -110,14 +120,14 @@ int MainWindow::saveInfo() {
 
 void MainWindow::on_actionSave_as_triggered()
 {
-    setWindowTitle(windowTitle().replace(0,1,""));
-    hasChanged=false;
     QString filename = QFileDialog::getSaveFileName(this,"Save as");
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly | QFile::Text)){
         QMessageBox::warning(this,"Warning","Cannot save file: "+file.errorString());
         return;
     }
+    setWindowTitle(windowTitle().replace(0,1,""));
+    hasChanged=false;
     currentFile=filename;
     setWindowTitle(filename);
     QTextStream out(&file);
@@ -151,12 +161,14 @@ void MainWindow::on_actionSave_triggered()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    bool isCanceled = 0;
+    int isCanceled = 1;
     if(hasChanged)
     {
         isCanceled = saveInfo();
     }
-    if(isCanceled){
+    qDebug()<<hasChanged;
+    qDebug()<<isCanceled;
+    if(!isCanceled or (isCanceled==1 and hasChanged==true)){
         event->ignore();
     }
 }

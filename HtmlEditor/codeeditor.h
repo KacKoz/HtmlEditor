@@ -16,7 +16,8 @@ signals:
 
 
 private slots:
-    void on_CodeEditor_textChanged();
+
+signals:
 
 private:
     void wheelEvent(QWheelEvent *event);

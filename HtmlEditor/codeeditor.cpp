@@ -2,6 +2,7 @@
 #include <QPalette>
 #include <windows.h>
 #include <winuser.h>
+#include<QDebug>
 
 #include <iostream>
 
@@ -32,7 +33,3 @@ void CodeEditor::wheelEvent(QWheelEvent *event)
     }
 }
 
-void CodeEditor::on_CodeEditor_textChanged()
-{
-    std::cout << "sakodn";
-}
