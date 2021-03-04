@@ -97,7 +97,7 @@ int MainWindow::saveInfo() {
 
     switch (ret) {
       case QMessageBox::Save:
-          on_actionSave_as_triggered();
+          on_actionSave_triggered();
           return 0;
       case QMessageBox::Discard:
           // Don't Save was clicked
@@ -113,6 +113,8 @@ int MainWindow::saveInfo() {
 
 void MainWindow::on_actionSave_as_triggered()
 {
+    setWindowTitle(windowTitle().replace(0,1,""));
+    hasChanged=false;
     QString filename = QFileDialog::getSaveFileName(this,"Save as");
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly | QFile::Text)){
@@ -129,9 +131,10 @@ void MainWindow::on_actionSave_as_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    setWindowTitle(windowTitle().replace(0,1,""));
     qDebug()<<currentFile;
     if(currentFile !=""){
+        setWindowTitle(windowTitle().replace(0,1,""));
+        hasChanged=false;
         QFile file(currentFile);
         if(!file.open(QIODevice::ReadWrite | QFile::Text)){
             QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
@@ -147,6 +150,19 @@ void MainWindow::on_actionSave_triggered()
     }
 }
 
+
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    bool isCanceled = 0;
+    if(hasChanged)
+    {
+        isCanceled = saveInfo();
+    }
+    if(isCanceled){
+        event->ignore();
+    }
+}
 
 
 void MainWindow::on_actionCut_triggered()

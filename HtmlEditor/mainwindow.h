@@ -18,6 +18,7 @@ public:
 protected:
     void resizeEvent(QResizeEvent *event);
     void wheelEvent(QWheelEvent *event);
+    void closeEvent(QCloseEvent *event);
     int saveInfo();
 
 private slots:
