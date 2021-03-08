@@ -17,8 +17,6 @@ signals:
 
 private slots:
 
-signals:
-
 private:
     void wheelEvent(QWheelEvent *event);
 };

@@ -2,15 +2,17 @@
 #include "ui_mainwindow.h"
 
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QPlainTextEdit>
+#include <QPushButton>
 #include <QTextStream>
 #include <QTreeView>
 #include <windows.h>
 #include <winuser.h>
 #include <iostream>
-#include<QDebug>
+#include <QDebug>
 #include <string>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -21,16 +23,39 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     codeeditor = new CodeEditor();
     lna = new LineNumberArea();
+    dirtree = new DirTree();
+    btn1 = new QPushButton;
+    btn2 = new QPushButton;
+    verticallayout = new QVBoxLayout;
+    horizontallayoutmain = new QHBoxLayout;
+    horizontallayout = new QHBoxLayout;
+    window = new QWidget;
+    dirmenu = new QWidget;
+
 
     connect(codeeditor, &CodeEditor::fontSizeChanged, lna, &LineNumberArea::handleFontSize);
     connect(codeeditor, &QPlainTextEdit::textChanged, this, &MainWindow::on_plainTextEdit_textChanged);
+    connect(this, &MainWindow::filechanged, dirtree, &DirTree::changefileDirectory);
+    connect(this, &MainWindow::directorychanged, dirtree, &DirTree::changeDirectory);
+    connect(dirtree, &DirTree::openFileFromTree, this, &MainWindow::on_actionOpen_from_tree);
 
     //codeeditor->connect(codeeditor,SIGNAL("textchanged()"),qDebug()<<"jfdhg");
+    //horizontallayoutmain->addWidget(dirtree);
 
-    ui->horizontalLayout->addWidget(lna);
-    ui->horizontalLayout->addWidget(codeeditor);
+    verticallayout ->addWidget(dirtree);
+    verticallayout->addLayout(horizontallayout);
+    horizontallayout->addWidget(btn1);
+    horizontallayout->addWidget(btn2);
+    dirmenu->setLayout(verticallayout);
 
-    this->setCentralWidget(ui->horizontalLayoutWidget);
+
+    horizontallayoutmain->addWidget(dirmenu);
+    horizontallayoutmain->addWidget(lna);
+    horizontallayoutmain->addWidget(codeeditor);
+    window->setLayout(horizontallayoutmain);
+
+
+    this->setCentralWidget(window);
     setWindowTitle("Untitled");
 }
 
@@ -39,17 +64,18 @@ MainWindow::~MainWindow()
     delete ui;
     delete codeeditor;
     delete lna;
+    delete dirtree;
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     if(this->width() < 500)
     {
-        ui->treeView->setVisible(false);
+        dirmenu->setVisible(false);
     }
-    else if(!ui->treeView->isVisible())
+    else if(!dirmenu->isVisible())
     {
-        ui->treeView->setVisible(true);
+        dirmenu->setVisible(true);
     }
 }
 
@@ -62,7 +88,7 @@ void MainWindow::on_actionNew_triggered()
         isCanceled = saveInfo();
     }
     if(isCanceled and !(isCanceled==1 and hasChanged==true)){
-        currentFile.clear();
+        currentFile.clear();// zobaczyć czy wysyłać emita=====================
         codeeditor->setPlainText(QString());
         setWindowTitle("Untitled");
         if(hasChanged)
@@ -80,11 +106,12 @@ void MainWindow::on_actionOpen_triggered()
     if(isCanceled and !(isCanceled==1 and hasChanged==true)){
         QString filename = QFileDialog::getOpenFileName(this,"Open the file");
         QFile file(filename);
-        currentFile=filename;
-        if(!file.open(QIODevice::ReadWrite | QFile::Text)){
+        if(!file.open(QIODevice::ReadOnly | QFile::Text)){
             QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
             return;
         }
+        currentFile=filename;
+        emit filechanged(currentFile);
         QTextStream in(&file);
         QString text = in.readAll();
         codeeditor->setPlainText(text);
@@ -93,6 +120,32 @@ void MainWindow::on_actionOpen_triggered()
         file.close();
     }
 }
+
+void MainWindow::on_actionOpen_from_tree(QString path){
+    int isCanceled = 1;
+    if(hasChanged)
+    {
+        isCanceled = saveInfo();
+    }
+    if(isCanceled and !(isCanceled==1 and hasChanged==true)){
+        //QString filename = QFileDialog::getOpenFileName(this,"Open the file");
+        QFile file(path);
+        qDebug()<<currentFile;
+        if(!file.open(QIODevice::ReadWrite | QFile::Text)){
+            QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
+            return;
+        }
+        currentFile=path;
+        emit filechanged(currentFile);
+        QTextStream in(&file);
+        QString text = in.readAll();
+        codeeditor->setPlainText(text);
+        hasChanged = false;
+        setWindowTitle(path);
+        file.close();
+    }
+}
+
 
 int MainWindow::saveInfo() {
     QMessageBox msgBox;
@@ -129,6 +182,7 @@ void MainWindow::on_actionSave_as_triggered()
     setWindowTitle(windowTitle().replace(0,1,""));
     hasChanged=false;
     currentFile=filename;
+    emit filechanged(currentFile);
     setWindowTitle(filename);
     QTextStream out(&file);
     QString text = codeeditor->toPlainText();
@@ -143,7 +197,7 @@ void MainWindow::on_actionSave_triggered()
         setWindowTitle(windowTitle().replace(0,1,""));
         hasChanged=false;
         QFile file(currentFile);
-        if(!file.open(QIODevice::ReadWrite | QFile::Text)){
+        if(!file.open(QIODevice::WriteOnly | QFile::Text)){
             QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
             return;
         }
@@ -151,6 +205,7 @@ void MainWindow::on_actionSave_triggered()
         QString text = codeeditor->toPlainText();
         qDebug()<< text;
         out<<text;
+        file.close();
     }
     else{
         on_actionSave_as_triggered();
@@ -207,4 +262,10 @@ void MainWindow::on_plainTextEdit_textChanged()
         setWindowTitle("*"+this->windowTitle());
     }
     hasChanged=true;
+}
+
+void MainWindow::on_actionOpen_directory_triggered()
+{
+    QString directoryname = QFileDialog::getExistingDirectory(this,"Open directory");
+    emit directorychanged(directoryname);
 }

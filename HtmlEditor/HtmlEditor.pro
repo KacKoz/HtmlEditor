@@ -10,12 +10,14 @@ CONFIG += c++11
 
 SOURCES += \
     codeeditor.cpp \
+    dirtree.cpp \
     linenumberarea.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     codeeditor.h \
+    dirtree.h \
     linenumberarea.h \
     mainwindow.h
 

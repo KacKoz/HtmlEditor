@@ -2,8 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+
 #include "codeeditor.h"
 #include "linenumberarea.h"
+#include "dirtree.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -45,11 +50,34 @@ private slots:
 
     void on_plainTextEdit_textChanged();
 
+    void on_actionOpen_directory_triggered();
+
+    //void on_actionNapiszcos_triggered();
+
+public slots:
+    void on_actionOpen_from_tree(QString path);
+    //void on_treeView_doubleClicked(const QModelIndex &index);
+
+signals:
+    void filechanged(QString name);
+    void directorychanged(QString name);
+
+
 private:
     Ui::MainWindow *ui;
     QString currentFile="";
     CodeEditor *codeeditor;
     LineNumberArea *lna;
+    DirTree *dirtree;
+    QPushButton *btn1;
+    QPushButton *btn2;
+    QVBoxLayout *verticallayout;
+    QHBoxLayout *horizontallayout;
+    QHBoxLayout *horizontallayoutmain;
+    QWidget *window;
+    QWidget *dirmenu;
+
+
     bool hasChanged = false;
 };
 #endif // MAINWINDOW_H
