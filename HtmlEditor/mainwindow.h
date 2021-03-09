@@ -26,9 +26,11 @@ protected:
     void resizeEvent(QResizeEvent *event);
     void closeEvent(QCloseEvent *event);
     int saveInfo();
+    QString currentFile="";
 
 private slots:
-    void on_actionNew_triggered();
+
+    void on_actionNew_triggered(bool deletedintree = false);
 
     void on_actionOpen_triggered();
 
@@ -52,7 +54,7 @@ private slots:
 
     void on_actionOpen_directory_triggered();
 
-    //void on_actionNapiszcos_triggered();
+    void givecurrentfilename();
 
 public slots:
     void on_actionOpen_from_tree(QString path);
@@ -61,11 +63,11 @@ public slots:
 signals:
     void filechanged(QString name);
     void directorychanged(QString name);
+    void currentfilename(QString name);
 
 
 private:
     Ui::MainWindow *ui;
-    QString currentFile="";
     CodeEditor *codeeditor;
     LineNumberArea *lna;
     DirTree *dirtree;
@@ -76,8 +78,6 @@ private:
     QHBoxLayout *horizontallayoutmain;
     QWidget *window;
     QWidget *dirmenu;
-
-
     bool hasChanged = false;
 };
 #endif // MAINWINDOW_H

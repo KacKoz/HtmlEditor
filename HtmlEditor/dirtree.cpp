@@ -12,6 +12,7 @@
 #include <QDirModel>
 #include <QDir>
 #include <QAction>
+#include <QInputDialog>
 #include <QMenu>
 
 DirTree::DirTree()
@@ -36,11 +37,16 @@ DirTree::DirTree()
     this->hideColumn(1);
     this->hideColumn(2);
     this->hideColumn(3);
-    newAct = new QAction(this);
-    newAct->setText("Napisz");
-    newAct->setStatusTip("TEKST");
+    contextopen = new QAction(this);
+    contextopen->setText("Open");
+    contextdelete = new QAction(this);
+    contextdelete->setText("Delete");
+    contextrename = new QAction(this);
+    contextrename->setText("Rename");
 
-    connect(newAct,&QAction::triggered, this,&DirTree::on_actionNapiszcos_triggered);
+    connect(contextopen,&QAction::triggered, this,&DirTree::on_actioncontextopen_triggered);
+    connect(contextdelete,&QAction::triggered, this,&DirTree::on_actioncontextdelete_triggered);
+    connect(contextrename,&QAction::triggered, this,&DirTree::on_actioncontextrename_triggered);
     connect(this,&DirTree::customContextMenuRequested,this,&DirTree::customMenuRequested);
 
 
@@ -87,13 +93,48 @@ void DirTree::mouseDoubleClickEvent(QMouseEvent * event){
     }
 }
 
-void DirTree::on_actionNapiszcos_triggered()
+void DirTree::on_actioncontextopen_triggered()
 {
 
     QModelIndex index = this->indexAt(contextmenucords);
     if(model->filePath(index)!="")
     {
-        qDebug()<<model->fileName(index);
+        emit openFileFromTree(model->filePath(index));
+    }
+}
+void DirTree::on_actioncontextdelete_triggered()
+{
+
+    QModelIndex index = this->indexAt(contextmenucords);
+    QString name = model->filePath(index);
+    if(name!="")
+    {
+        emit askforcurrentfilename();
+        qDebug()<<currentfile;
+        if(currentfile==model->filePath(index))
+        {
+            emit filedeleted(true);
+        }
+        QFile file(name);
+        file.remove();
+    }
+}
+void DirTree::on_actioncontextrename_triggered()
+{
+
+    QModelIndex index = this->indexAt(contextmenucords);
+    QString name = model->filePath(index);
+    if(name!="")
+    {
+        QFile file(name);
+        qDebug()<<file;
+        while(name[name.length()-1]!='/')
+        {
+            name.remove(name.length()-1,1);
+        }
+        QString newname = QInputDialog::getText(this,"Rename","Enter a new name:",QLineEdit::Normal,model->fileName(index));
+        file.rename(name+newname);
+        qDebug()<<file;
     }
 }
 
@@ -117,12 +158,18 @@ void DirTree::customMenuRequested(const QPoint &pos)
     if(model->filePath(this->indexAt(pos))!="")
     {
         QMenu menu(this);
-        menu.addAction(newAct);
+        menu.addAction(contextopen);
+        menu.addAction(contextrename);
+        menu.addAction(contextdelete);
         contextmenucords = pos;
         menu.exec(this->viewport()->mapToGlobal(pos));
     }
 }
 
+void DirTree::receivecurrentfilename(QString name)
+{
+    currentfile=name;
+}
 
 
 

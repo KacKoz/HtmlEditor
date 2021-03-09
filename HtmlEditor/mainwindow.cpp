@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
     dirtree = new DirTree();
     btn1 = new QPushButton;
     btn2 = new QPushButton;
+    btn1->setText("Create directory");
+    btn2->setText("Create file");
     verticallayout = new QVBoxLayout;
     horizontallayoutmain = new QHBoxLayout;
     horizontallayout = new QHBoxLayout;
@@ -38,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::filechanged, dirtree, &DirTree::changefileDirectory);
     connect(this, &MainWindow::directorychanged, dirtree, &DirTree::changeDirectory);
     connect(dirtree, &DirTree::openFileFromTree, this, &MainWindow::on_actionOpen_from_tree);
+    connect(dirtree, &DirTree::askforcurrentfilename, this, &MainWindow::givecurrentfilename);
+    connect(this, &MainWindow::currentfilename, dirtree, &DirTree::receivecurrentfilename);
+    connect(dirtree, &DirTree::filedeleted, this, &MainWindow::on_actionNew_triggered);
 
     //codeeditor->connect(codeeditor,SIGNAL("textchanged()"),qDebug()<<"jfdhg");
     //horizontallayoutmain->addWidget(dirtree);
@@ -80,12 +85,17 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 }
 
 
-void MainWindow::on_actionNew_triggered()
+void MainWindow::on_actionNew_triggered(bool deletedintree)
 {
+    qDebug()<<deletedintree;
     int isCanceled = 1;
-    if(hasChanged)
+    if(hasChanged and !deletedintree)
     {
         isCanceled = saveInfo();
+    }
+    if(deletedintree)
+    {
+        hasChanged=false;
     }
     if(isCanceled and !(isCanceled==1 and hasChanged==true)){
         currentFile.clear();// zobaczyć czy wysyłać emita=====================
@@ -268,4 +278,9 @@ void MainWindow::on_actionOpen_directory_triggered()
 {
     QString directoryname = QFileDialog::getExistingDirectory(this,"Open directory");
     emit directorychanged(directoryname);
+}
+
+void MainWindow::givecurrentfilename()
+{
+    emit currentfilename(currentFile);
 }
