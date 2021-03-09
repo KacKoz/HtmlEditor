@@ -1,7 +1,7 @@
 #include "linenumberarea.h"
 
 
-LineNumberArea::LineNumberArea(QWidget *parent) : QPlainTextEdit/*QWidget*/(parent)
+LineNumberArea::LineNumberArea(QWidget *parent) : QPlainTextEdit(parent)
 {
     QSizePolicy sp;
     sp.setHorizontalPolicy(QSizePolicy::Fixed);
@@ -14,8 +14,9 @@ LineNumberArea::LineNumberArea(QWidget *parent) : QPlainTextEdit/*QWidget*/(pare
     this->setPalette(pal);
     //this->setReadOnly(true);
     this->setTextInteractionFlags(Qt::NoTextInteraction);
-
-    this->appendPlainText("1\n");
+    this->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    //this->appendPlainText("1\n");
+    connect(this, &LineNumberArea::shouldChangeSize, this, &LineNumberArea::onShouldChangeSize);
 
 }
 
@@ -25,15 +26,38 @@ void LineNumberArea::handleFontSize(int size)
     f.setPointSize(size);
     this->setFont(f);
 
-   /// TODO
-   /* QFont myFont(fontName, fontSize);;
-    QString str("I wonder how wide this is?");
+    emit shouldChangeSize();
 
-    QFontMetrics fm(myFont);
-    int width=fm.horizontalAdvance(str);*/
 }
 
 void LineNumberArea::wheelEvent(QWheelEvent *event)
 {
 
+}
+
+void LineNumberArea::onShouldChangeSize()
+{
+    QFont f = this->font();
+    QFontMetrics fm(f);
+    this->setMaximumWidth(fm.horizontalAdvance(QString::fromStdString(std::to_string(_lines))) + 10);
+}
+
+void LineNumberArea::onBlockCountVector(std::vector<int>* v)
+{
+    int c = v->size();
+    _lines = c;
+    _lineNumbers = "";
+    for(int i=0; i<c; i++)
+    {
+        qDebug() << "Line: " << i << " count: " << v->at(i);
+        _lineNumbers.append(QString::fromStdString(std::to_string(i + 1)));
+        for(int j = 0; j < v->at(i); j++)
+        {
+            _lineNumbers.append("\n");
+        }
+    }
+
+   this->setPlainText(_lineNumbers);
+
+   emit shouldChangeSize();
 }
