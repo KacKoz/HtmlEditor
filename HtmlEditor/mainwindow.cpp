@@ -40,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(dirtree, &DirTree::openFileFromTree, this, &MainWindow::on_actionOpen_from_tree);
 
     connect(codeeditor, &CodeEditor::blockCountVector, lna, &LineNumberArea::onBlockCountVector);
+    connect(codeeditor, &CodeEditor::scrolledTo, lna, &LineNumberArea::onScrolledTo);
+
     //codeeditor->connect(codeeditor,SIGNAL("textchanged()"),qDebug()<<"jfdhg");
     //horizontallayoutmain->addWidget(dirtree);
 

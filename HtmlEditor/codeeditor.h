@@ -22,6 +22,8 @@ signals:
 
 private slots:
     void onBlockCountChange(int count);
+    void onUpdateRequest();
+    void onCursorMoved();
 
 private:
     void wheelEvent(QWheelEvent *event);

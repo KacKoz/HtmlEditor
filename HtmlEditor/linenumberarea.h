@@ -20,12 +20,13 @@ public slots:
     void onBlockCountVector(std::vector<int>*);
     void onScrolledTo(int offset);
 
+
 signals:
     void shouldChangeSize();
 
 private:
     void wheelEvent(QWheelEvent *event);
-    QString _lineNumbers = "1\n";
+    QString _lineNumbers = "01\n";
     int _lines = 1;
 };
 

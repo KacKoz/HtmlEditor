@@ -18,6 +18,9 @@ CodeEditor::CodeEditor()
     //this->setLineWrapMode(LineWrapMode::NoWrap);
 
     connect(this, &QPlainTextEdit::blockCountChanged, this, &CodeEditor::onBlockCountChange);
+    connect(this, &QPlainTextEdit::updateRequest, this, &CodeEditor::onUpdateRequest);
+    connect(this, &QPlainTextEdit::cursorPositionChanged, this, &CodeEditor::onCursorMoved);
+
 }
 
 void CodeEditor::wheelEvent(QWheelEvent *event)
@@ -36,8 +39,8 @@ void CodeEditor::wheelEvent(QWheelEvent *event)
             emit fontSizeChanged(size);
         }
         this->setFont(f);
+        emit blockCountChanged(_linesInBlock.size());
     }
-
 
 }
 
@@ -53,4 +56,15 @@ void  CodeEditor::onBlockCountChange(int count)
     }
 
     emit blockCountVector(&_linesInBlock);
+    emit scrolledTo(this->verticalScrollBar()->value());
+}
+
+void CodeEditor::onUpdateRequest()
+{
+    emit scrolledTo(this->verticalScrollBar()->value());
+}
+
+void CodeEditor::onCursorMoved()
+{
+    emit blockCountChanged(_linesInBlock.size());
 }
