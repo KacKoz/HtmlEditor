@@ -16,10 +16,13 @@ signals:
     void openFileFromTree(QString path);
     void askforcurrentfilename();
     void filedeleted(bool deletedintree);
+    void currentfilenamechanged(QString name);
+    void currentdirpath(QString path);
 
 protected:
     //void contextMenuEvent(QContextMenuEvent *event);
     virtual void mouseDoubleClickEvent(QMouseEvent * event);
+    int deleteInfo();
 
 public slots:
     void changefileDirectory(QString name);
@@ -29,6 +32,7 @@ public slots:
     void on_actioncontextrename_triggered();
     void customMenuRequested(const QPoint &pos);
     void receivecurrentfilename(QString name);
+    void givecurrentdir();
     //void on_treeView_doubleClicked(const QModelIndex &index);
 
 private:
@@ -38,6 +42,7 @@ private:
     QAction* contextrename;
     QPoint contextmenucords;
     QString currentfile="";
+    QString currentdir="";
 
 };
 
