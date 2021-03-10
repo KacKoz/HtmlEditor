@@ -19,6 +19,8 @@ signals:
     void blockCountVector(std::vector<int>*);
     void scrolledTo(int offset);
 
+public slots:
+    void onSelectLine(int line);
 
 private slots:
     void onBlockCountChange(int count);
@@ -27,8 +29,13 @@ private slots:
 
 private:
     void wheelEvent(QWheelEvent *event);
+    void highlightCurrentLine();
+    void setTextCursorPosition(QTextCursor& tc, int line);
 
     std::vector<int> _linesInBlock;
+    QTextEdit::ExtraSelection _selection;
+    QList<QTextEdit::ExtraSelection> _extraSelections;
+
 
 };
 

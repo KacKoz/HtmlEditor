@@ -21,10 +21,16 @@ CodeEditor::CodeEditor()
     connect(this, &QPlainTextEdit::updateRequest, this, &CodeEditor::onUpdateRequest);
     connect(this, &QPlainTextEdit::cursorPositionChanged, this, &CodeEditor::onCursorMoved);
 
+    this->_linesInBlock.push_back(1);
+    _selection.format.setBackground(QColor(QRgb(0x4a4a4a)));
+    _selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+    highlightCurrentLine();
+
 }
 
 void CodeEditor::wheelEvent(QWheelEvent *event)
 {
+
     this->verticalScrollBar()->setValue(this->verticalScrollBar()->value() - (event->angleDelta().y()/25));
     emit scrolledTo(this->verticalScrollBar()->value());
 
@@ -62,9 +68,59 @@ void  CodeEditor::onBlockCountChange(int count)
 void CodeEditor::onUpdateRequest()
 {
     emit scrolledTo(this->verticalScrollBar()->value());
+    emit blockCountChanged(_linesInBlock.size());
 }
 
 void CodeEditor::onCursorMoved()
 {
     emit blockCountChanged(_linesInBlock.size());
+    highlightCurrentLine();
+}
+
+void CodeEditor::highlightCurrentLine()
+{
+    if(!isReadOnly())
+    {
+        _selection.cursor = textCursor();
+       // _selection.cursor.clearSelection();
+        _extraSelections.clear();
+        _extraSelections.append(_selection);
+        setExtraSelections(_extraSelections);
+    }
+}
+
+void CodeEditor::onSelectLine(int line)
+{
+    QTextBlock tb = this->firstVisibleBlock();
+    while(tb.isValid() && tb.blockNumber() != line)
+        tb = tb.next();
+
+    qDebug() << "Line: " << line;
+
+    if(!tb.isValid())
+    {
+        qDebug() << "Error! Block to select not valid!";
+    }
+    else
+    {
+
+        /*_selection.cursor = textCursor();
+        this->_selection.cursor.setPosition(line);
+        _extraSelections.append(_selection);
+        setExtraSelections(_extraSelections);*/
+        QTextCursor tc = this->textCursor();
+        setTextCursorPosition(tc, line);
+        tc.select(QTextCursor::BlockUnderCursor);
+        this->setTextCursor(tc);
+        this->setFocus();
+
+    }
+}
+
+void CodeEditor::setTextCursorPosition(QTextCursor& tc, int blockNumber)
+{
+    int curBlockNum = tc.blockNumber();
+    tc.movePosition(blockNumber > curBlockNum ?
+                    QTextCursor::NextBlock : QTextCursor::PreviousBlock,
+                    QTextCursor::MoveAnchor, abs(curBlockNum - blockNumber));
 }

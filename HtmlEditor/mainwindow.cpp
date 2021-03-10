@@ -41,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(codeeditor, &CodeEditor::blockCountVector, lna, &LineNumberArea::onBlockCountVector);
     connect(codeeditor, &CodeEditor::scrolledTo, lna, &LineNumberArea::onScrolledTo);
+    connect(lna,&LineNumberArea::selectLine ,codeeditor , &CodeEditor::onSelectLine);
 
     //codeeditor->connect(codeeditor,SIGNAL("textchanged()"),qDebug()<<"jfdhg");
     //horizontallayoutmain->addWidget(dirtree);

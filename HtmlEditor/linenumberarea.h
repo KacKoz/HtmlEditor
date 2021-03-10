@@ -23,9 +23,11 @@ public slots:
 
 signals:
     void shouldChangeSize();
+    void selectLine(int line);
 
 private:
     void wheelEvent(QWheelEvent *event);
+    void mousePressEvent(QMouseEvent *event);
     QString _lineNumbers = "01\n";
     int _lines = 1;
 };
