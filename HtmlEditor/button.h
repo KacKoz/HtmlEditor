@@ -19,6 +19,7 @@ public slots:
     void makefile();
 
 private:
+    void infofirstopen(QString fileordir);
     QString currentdir="";
 
 };

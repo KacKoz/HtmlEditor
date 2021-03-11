@@ -150,10 +150,11 @@ void DirTree::on_actioncontextdelete_triggered()
                    if (pathDir.exists())
                    {
                         QMessageBox msgBox;
+                        msgBox.setFixedWidth(300);
                         msgBox.setIcon(QMessageBox::Warning);
                         msgBox.setWindowTitle("Delete");
-                        msgBox.setText("Folder is in use");
-                        msgBox.setInformativeText("Try delete the most nested directories first");
+                        msgBox.setText("Folder is in use\n\nTry to delete the most nested directories first");
+                        //msgBox.setInformativeText("Try delete the most nested directories first");
                         msgBox.setStandardButtons(QMessageBox::Ok);
                         msgBox.setDefaultButton(QMessageBox::Ok);
                         int ret = msgBox.exec();
