@@ -9,6 +9,7 @@
 #include "codeeditor.h"
 #include "linenumberarea.h"
 #include "dirtree.h"
+#include "button.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,8 +28,10 @@ protected:
     void closeEvent(QCloseEvent *event);
     int saveInfo();
 
+
 private slots:
-    void on_actionNew_triggered();
+
+    void on_actionNew_triggered(bool deletedintree = false);
 
     void on_actionOpen_triggered();
 
@@ -52,7 +55,9 @@ private slots:
 
     void on_actionOpen_directory_triggered();
 
-    //void on_actionNapiszcos_triggered();
+    void givecurrentfilename();
+
+    void newcurrentfilename(QString name);
 
 public slots:
     void on_actionOpen_from_tree(QString path);
@@ -61,23 +66,22 @@ public slots:
 signals:
     void filechanged(QString name);
     void directorychanged(QString name);
+    void currentfilename(QString name);
 
 
 private:
-    Ui::MainWindow *ui;
     QString currentFile="";
+    Ui::MainWindow *ui;
     CodeEditor *codeeditor;
     LineNumberArea *lna;
     DirTree *dirtree;
-    QPushButton *btn1;
-    QPushButton *btn2;
+    Button *btn1;
+    Button *btn2;
     QVBoxLayout *verticallayout;
     QHBoxLayout *horizontallayout;
     QHBoxLayout *horizontallayoutmain;
     QWidget *window;
     QWidget *dirmenu;
-
-
     bool hasChanged = false;
 };
 #endif // MAINWINDOW_H
