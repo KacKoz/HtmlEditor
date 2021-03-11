@@ -15,7 +15,7 @@ CodeEditor::CodeEditor()
     pal.setColor(QPalette::Base, QRgb(0x5a5a5a));
     //this->setAutoFillBackground(true);
     this->setPalette(pal);
-    //this->setLineWrapMode(LineWrapMode::NoWrap);
+    this->setLineWrapMode(LineWrapMode::NoWrap);
 
     connect(this, &QPlainTextEdit::blockCountChanged, this, &CodeEditor::onBlockCountChange);
     connect(this, &QPlainTextEdit::updateRequest, this, &CodeEditor::onUpdateRequest);
