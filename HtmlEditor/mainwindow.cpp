@@ -14,6 +14,7 @@
 #include <iostream>
 #include <QDebug>
 #include <string>
+#include <QDesktopWidget>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -21,8 +22,16 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     ui->setupUi(this);
-    codeeditor = new CodeEditor();
-    lna = new LineNumberArea();
+
+
+
+    this->setGeometry( QApplication::desktop()->width()/2 - 400 , QApplication::desktop()->height()/2 - 300, 800, 600 );
+    //codeeditor = new CodeEditor();
+    //lna = new LineNumberArea();
+
+
+
+
     dirtree = new DirTree();
     btn1 = new Button("Create directory");
     btn2 = new Button("Create file");
@@ -32,9 +41,11 @@ MainWindow::MainWindow(QWidget *parent)
     window = new QWidget;
     dirmenu = new QWidget;
 
+    CodeAreaWidget* caw = new CodeAreaWidget(this);
 
-    connect(codeeditor, &CodeEditor::fontSizeChanged, lna, &LineNumberArea::handleFontSize);
-    connect(codeeditor, &QPlainTextEdit::textChanged, this, &MainWindow::on_plainTextEdit_textChanged);
+
+
+    connect(caw, &CodeAreaWidget::codeTextChanged, this, &MainWindow::on_plainTextEdit_textChanged);
     connect(this, &MainWindow::filechanged, dirtree, &DirTree::changefileDirectory);
     connect(this, &MainWindow::directorychanged, dirtree, &DirTree::changeDirectory);
     connect(dirtree, &DirTree::openFileFromTree, this, &MainWindow::on_actionOpen_from_tree);
@@ -49,10 +60,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(btn2,&Button::askforcurrentdir,dirtree,&DirTree::givecurrentdir);
     connect(dirtree,&DirTree::currentdirpath,btn2,&Button::receivecurrentdir);
 
-    connect(codeeditor, &CodeEditor::blockCountVector, lna, &LineNumberArea::onBlockCountVector);
-    connect(codeeditor, &CodeEditor::scrolledTo, lna, &LineNumberArea::onScrolledTo);
-    connect(lna,&LineNumberArea::selectLine ,codeeditor , &CodeEditor::onSelectLine);
-
     //codeeditor->connect(codeeditor,SIGNAL("textchanged()"),qDebug()<<"jfdhg");
     //horizontallayoutmain->addWidget(dirtree);
 
@@ -64,8 +71,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     horizontallayoutmain->addWidget(dirmenu);
-    horizontallayoutmain->addWidget(lna);
-    horizontallayoutmain->addWidget(codeeditor);
+    //horizontallayoutmain->addWidget(lna);
+    //horizontallayoutmain->addWidget(codeeditor);
+    horizontallayout->addWidget(caw);
     window->setLayout(horizontallayoutmain);
 
 
@@ -76,8 +84,8 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete codeeditor;
-    delete lna;
+    //delete codeeditor;
+    //delete lna;
     delete dirtree;
 }
 

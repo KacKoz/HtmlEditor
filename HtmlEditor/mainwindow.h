@@ -6,10 +6,9 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
-#include "codeeditor.h"
-#include "linenumberarea.h"
 #include "dirtree.h"
 #include "button.h"
+#include "codeareawidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -72,8 +71,8 @@ signals:
 private:
     QString currentFile="";
     Ui::MainWindow *ui;
-    CodeEditor *codeeditor;
-    LineNumberArea *lna;
+    //CodeEditor *codeeditor;
+    //LineNumberArea *lna;
     DirTree *dirtree;
     Button *btn1;
     Button *btn2;

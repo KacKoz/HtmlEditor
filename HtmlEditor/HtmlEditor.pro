@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     button.cpp \
+    codeareawidget.cpp \
     codeeditor.cpp \
     dirtree.cpp \
     linenumberarea.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
 
 HEADERS += \
     button.h \
+    codeareawidget.h \
     codeeditor.h \
     dirtree.h \
     linenumberarea.h \
