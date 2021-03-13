@@ -43,6 +43,7 @@ private:
     QPoint contextmenucords;
     QString currentfile="";
     QString currentdir="";
+    char forbiddennames[9] = {'/','\\','"','?',':','*','|','<','>'};
 
 };
 

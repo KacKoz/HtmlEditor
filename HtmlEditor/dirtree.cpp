@@ -59,6 +59,7 @@ void DirTree::changefileDirectory(QString name){
     {
         sPath.remove(sPath.length()-1,1);
     }
+    sPath.remove(sPath.length()-1,1);
     model->setNameFilters(QStringList() << "*.txt"<< "*.html");
     model->setFilter(QDir::Files | QDir::AllDirs | QDir::NoDotAndDotDot);
     model->setNameFilterDisables(false);
@@ -66,7 +67,7 @@ void DirTree::changefileDirectory(QString name){
     this->setModel(model);
     this->setRootIndex(model->index(sPath));
     currentdir=sPath;
-
+    //qDebug()<<sPath;
 }
 
 void DirTree::changeDirectory(QString name){
@@ -85,11 +86,15 @@ void DirTree::mouseDoubleClickEvent(QMouseEvent * event){
     {
         //QModelIndexList index = this->selectedIndexes();
         QModelIndex index = this->indexAt(event->localPos().toPoint());
-        //qDebug()<<model->filePath(index);
+        qDebug()<<model->filePath(index);
         if(model->filePath(index)!="")
         {
+            if(model->isDir(index))
+                changeDirectory(model->filePath(index));
+            else
+                emit openFileFromTree(model->filePath(index));
             //emit openFileFromTree(model->filePath(index[0]));
-            emit openFileFromTree(model->filePath(index));
+
         }
     }
 }
@@ -119,10 +124,10 @@ void DirTree::on_actioncontextdelete_triggered()
         if(name!="")
         {
             emit askforcurrentfilename();
-            qDebug()<<currentfile;
+            //qDebug()<<currentfile;
             if(model->isDir(index))
             {
-                if(currentfile.indexOf(name)>=0)
+                if(currentfile.indexOf(name)>=0 and currentfile[name.length()]=="/")
                 {
                     QMessageBox msgBox;
                     msgBox.setIcon(QMessageBox::Warning);
@@ -217,16 +222,47 @@ void DirTree::on_actioncontextrename_triggered()
         if(name==currentfile)
             renamecurrent = true;
         QFile file(name);
-        qDebug()<<file;
+        //qDebug()<<file;
         while(name[name.length()-1]!='/')
         {
             name.remove(name.length()-1,1);
         }
         QString newname = QInputDialog::getText(this,"Rename","Enter a new name:",QLineEdit::Normal,model->fileName(index));
+        if(newname=="")
+        {
+            file.close();
+            return;
+        }
+        for(int i =0;i<9;i++)
+        {
+            if(newname.indexOf(forbiddennames[i])>=0 or newname.length()==0)
+            {
+                QMessageBox msgBox;
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setWindowTitle("Invalid name");
+                msgBox.setText("The file name cannot contain any of the following characters: \\/:*?\"<>|\nAnd can't be empty");
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setDefaultButton(QMessageBox::Ok);
+                int ret = msgBox.exec();
+                switch (ret)
+                {
+                  case QMessageBox::Ok:
+                      msgBox.close();
+                      return;
+                      break;
+                  default:
+                      msgBox.close();
+                      return;
+                      break;
+                }
+            }
+        }
+        //qDebug()<<"dsfsdfdsa";
         file.rename(name+newname);
         if(renamecurrent)
             emit currentfilenamechanged(name+newname);
-        qDebug()<<file;
+        //qDebug()<<file;
+        file.close();
     }
 }
 

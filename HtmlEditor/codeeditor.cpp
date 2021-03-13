@@ -95,11 +95,11 @@ void CodeEditor::onSelectLine(int line)
     while(tb.isValid() && tb.blockNumber() != line)
         tb = tb.next();
 
-    qDebug() << "Line: " << line;
+    //qDebug() << "Line: " << line;
 
     if(!tb.isValid())
     {
-        qDebug() << "Error! Block to select not valid!";
+        //qDebug() << "Error! Block to select not valid!";
     }
     else
     {

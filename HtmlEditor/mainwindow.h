@@ -75,10 +75,11 @@ private:
     CodeEditor *codeeditor;
     LineNumberArea *lna;
     DirTree *dirtree;
-    Button *btn1;
-    Button *btn2;
+    Button *btndir;
+    Button *btnfile;
+    Button *btnparent;
     QVBoxLayout *verticallayout;
-    QHBoxLayout *horizontallayout;
+    QHBoxLayout *horizontallayoutbuttons;
     QHBoxLayout *horizontallayoutmain;
     QWidget *window;
     QWidget *dirmenu;

@@ -22,6 +22,7 @@ LineNumberArea::LineNumberArea(QWidget *parent) : QPlainTextEdit(parent)
     connect(this, &LineNumberArea::shouldChangeSize, this, &LineNumberArea::onShouldChangeSize);
     viewport()->setCursor(Qt::CustomCursor);
     emit shouldChangeSize();
+    this->setLineWrapMode(QPlainTextEdit::NoWrap);
 }
 
 void LineNumberArea::handleFontSize(int size)
@@ -55,6 +56,7 @@ void LineNumberArea::onBlockCountVector(std::vector<int>* v)
     {
        // if(i < 9) _lineNumbers.append("0");
         //else
+        //_lineNumbers.append(" ");
         for(int k = 0; k < (std::to_string(_lines).length() > 1 ? std::to_string(_lines).length() : 2) - std::to_string(i + 1).length(); k++)
         {
             _lineNumbers.append("0");

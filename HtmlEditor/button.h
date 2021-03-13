@@ -12,15 +12,19 @@ public:
 
 signals:
     void askforcurrentdir();
+    void directorychanged(QString name);
 
 public slots:
     void receivecurrentdir(QString path);
     void makedir();
     void makefile();
+    void movetoparent();
 
 private:
     void infofirstopen(QString fileordir);
+    void infoinvalidname(QString fileordir);
     QString currentdir="";
+    char forbiddennames[9] = {'/','\\','"','?',':','*','|','<','>'};
 
 };
 

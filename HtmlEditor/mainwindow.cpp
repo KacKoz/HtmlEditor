@@ -24,11 +24,12 @@ MainWindow::MainWindow(QWidget *parent)
     codeeditor = new CodeEditor();
     lna = new LineNumberArea();
     dirtree = new DirTree();
-    btn1 = new Button("Create directory");
-    btn2 = new Button("Create file");
+    btndir = new Button("Create directory");
+    btnfile = new Button("Create file");
+    btnparent = new Button("Move to parent directory");
     verticallayout = new QVBoxLayout;
     horizontallayoutmain = new QHBoxLayout;
-    horizontallayout = new QHBoxLayout;
+    horizontallayoutbuttons = new QHBoxLayout;
     window = new QWidget;
     dirmenu = new QWidget;
 
@@ -42,12 +43,18 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::currentfilename, dirtree, &DirTree::receivecurrentfilename);
     connect(dirtree, &DirTree::filedeleted, this, &MainWindow::on_actionNew_triggered);
     connect(dirtree, &DirTree::currentfilenamechanged, this, &MainWindow::newcurrentfilename);
-    connect(btn1,&QPushButton::pressed,btn1, &Button::makedir);
-    connect(btn2,&QPushButton::pressed,btn2, &Button::makefile);
-    connect(btn1,&Button::askforcurrentdir,dirtree,&DirTree::givecurrentdir);
-    connect(dirtree,&DirTree::currentdirpath,btn1,&Button::receivecurrentdir);
-    connect(btn2,&Button::askforcurrentdir,dirtree,&DirTree::givecurrentdir);
-    connect(dirtree,&DirTree::currentdirpath,btn2,&Button::receivecurrentdir);
+    connect(btndir,&QPushButton::pressed,btndir, &Button::makedir);
+    connect(btnfile,&QPushButton::pressed,btnfile, &Button::makefile);
+    connect(btnparent,&QPushButton::pressed,btnparent, &Button::movetoparent);
+    connect(btndir,&Button::askforcurrentdir,dirtree,&DirTree::givecurrentdir);
+    connect(dirtree,&DirTree::currentdirpath,btndir,&Button::receivecurrentdir);
+    connect(btnfile,&Button::askforcurrentdir,dirtree,&DirTree::givecurrentdir);
+    connect(dirtree,&DirTree::currentdirpath,btnfile,&Button::receivecurrentdir);
+    connect(btnparent,&Button::askforcurrentdir,dirtree,&DirTree::givecurrentdir);
+    connect(dirtree,&DirTree::currentdirpath,btnparent,&Button::receivecurrentdir);
+    connect(btnparent, &Button::directorychanged, dirtree, &DirTree::changeDirectory);
+
+
 
     connect(codeeditor, &CodeEditor::blockCountVector, lna, &LineNumberArea::onBlockCountVector);
     connect(codeeditor, &CodeEditor::scrolledTo, lna, &LineNumberArea::onScrolledTo);
@@ -56,10 +63,11 @@ MainWindow::MainWindow(QWidget *parent)
     //codeeditor->connect(codeeditor,SIGNAL("textchanged()"),qDebug()<<"jfdhg");
     //horizontallayoutmain->addWidget(dirtree);
 
+    verticallayout ->addWidget(btnparent);
     verticallayout ->addWidget(dirtree);
-    verticallayout->addLayout(horizontallayout);
-    horizontallayout->addWidget(btn1);
-    horizontallayout->addWidget(btn2);
+    verticallayout->addLayout(horizontallayoutbuttons);
+    horizontallayoutbuttons->addWidget(btndir);
+    horizontallayoutbuttons->addWidget(btnfile);
     dirmenu->setLayout(verticallayout);
 
 
@@ -96,7 +104,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 void MainWindow::on_actionNew_triggered(bool deletedintree)
 {
-    qDebug()<<deletedintree;
+    //qDebug()<<deletedintree;
     int isCanceled = 1;
     if(hasChanged and !deletedintree)
     {
@@ -141,27 +149,30 @@ void MainWindow::on_actionOpen_triggered()
 }
 
 void MainWindow::on_actionOpen_from_tree(QString path){
-    int isCanceled = 1;
-    if(hasChanged)
+    if(currentFile!=path)
     {
-        isCanceled = saveInfo();
-    }
-    if(isCanceled and !(isCanceled==1 and hasChanged==true)){
-        //QString filename = QFileDialog::getOpenFileName(this,"Open the file");
-        QFile file(path);
-        qDebug()<<currentFile;
-        if(!file.open(QIODevice::ReadWrite | QFile::Text)){
-            QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
-            return;
+        int isCanceled = 1;
+        if(hasChanged)
+        {
+            isCanceled = saveInfo();
         }
-        currentFile=path;
-        //emit filechanged(currentFile);
-        QTextStream in(&file);
-        QString text = in.readAll();
-        codeeditor->setPlainText(text);
-        hasChanged = false;
-        setWindowTitle(path);
-        file.close();
+        if(isCanceled and !(isCanceled==1 and hasChanged==true)){
+            //QString filename = QFileDialog::getOpenFileName(this,"Open the file");
+            QFile file(path);
+            //qDebug()<<currentFile;
+            if(!file.open(QIODevice::ReadWrite | QFile::Text)){
+                QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
+                return;
+            }
+            currentFile=path;
+            //emit filechanged(currentFile);
+            QTextStream in(&file);
+            QString text = in.readAll();
+            codeeditor->setPlainText(text);
+            hasChanged = false;
+            setWindowTitle(path);
+            file.close();
+        }
     }
 }
 
@@ -212,7 +223,7 @@ void MainWindow::on_actionSave_as_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    qDebug()<<currentFile;
+    //qDebug()<<currentFile;
     if(currentFile !=""){
         setWindowTitle(windowTitle().replace(0,1,""));
         hasChanged=false;
@@ -223,7 +234,7 @@ void MainWindow::on_actionSave_triggered()
         }
         QTextStream out(&file);
         QString text = codeeditor->toPlainText();
-        qDebug()<< text;
+        //qDebug()<< text;
         out<<text;
         file.close();
     }
@@ -241,8 +252,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     {
         isCanceled = saveInfo();
     }
-    qDebug()<<hasChanged;
-    qDebug()<<isCanceled;
+    //qDebug()<<hasChanged;
+    //qDebug()<<isCanceled;
     if(!isCanceled or (isCanceled==1 and hasChanged==true)){
         event->ignore();
     }
