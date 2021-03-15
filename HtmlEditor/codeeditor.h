@@ -1,6 +1,8 @@
 #ifndef CODEEDITOR_H
 #define CODEEDITOR_H
 
+#include <autocomplete.h>
+
 #include <QPlainTextEdit>
 
 #include <vector>
@@ -26,8 +28,10 @@ private slots:
     void onBlockCountChange(int count);
     void onUpdateRequest();
     void onCursorMoved();
+    void insertclosingtag(QString closingtag);
 
 private:
+    Autocomplete* autocomplete;
     void wheelEvent(QWheelEvent *event);
     void highlightCurrentLine();
     void setTextCursorPosition(QTextCursor& tc, int line);

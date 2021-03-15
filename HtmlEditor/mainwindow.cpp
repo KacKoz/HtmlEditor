@@ -87,6 +87,15 @@ MainWindow::~MainWindow()
     delete codeeditor;
     delete lna;
     delete dirtree;
+    delete btndir;
+    delete btnfile;
+    delete btnparent;
+    delete horizontallayoutbuttons;
+    delete verticallayout;
+    delete dirmenu;
+    delete horizontallayoutmain;
+    delete window;
+
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
