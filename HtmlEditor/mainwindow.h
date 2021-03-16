@@ -10,6 +10,7 @@
 #include "linenumberarea.h"
 #include "dirtree.h"
 #include "button.h"
+#include "codeeditorarea.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -72,8 +73,6 @@ signals:
 private:
     QString currentFile="";
     Ui::MainWindow *ui;
-    CodeEditor *codeeditor;
-    LineNumberArea *lna;
     DirTree *dirtree;
     Button *btndir;
     Button *btnfile;
@@ -84,5 +83,7 @@ private:
     QWidget *window;
     QWidget *dirmenu;
     bool hasChanged = false;
+
+    CodeEditorArea* cda;
 };
 #endif // MAINWINDOW_H

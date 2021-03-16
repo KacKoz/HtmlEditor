@@ -12,6 +12,7 @@ SOURCES += \
     autocomplete.cpp \
     button.cpp \
     codeeditor.cpp \
+    codeeditorarea.cpp \
     dirtree.cpp \
     linenumberarea.cpp \
     main.cpp \
@@ -21,6 +22,7 @@ HEADERS += \
     autocomplete.h \
     button.h \
     codeeditor.h \
+    codeeditorarea.h \
     dirtree.h \
     linenumberarea.h \
     mainwindow.h

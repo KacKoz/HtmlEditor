@@ -15,14 +15,14 @@
 #include <QDebug>
 #include <string>
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
 
     ui->setupUi(this);
-    codeeditor = new CodeEditor();
-    lna = new LineNumberArea();
+    cda = new CodeEditorArea();
     dirtree = new DirTree();
     btndir = new Button("Create directory");
     btnfile = new Button("Create file");
@@ -34,8 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
     dirmenu = new QWidget;
 
 
-    connect(codeeditor, &CodeEditor::fontSizeChanged, lna, &LineNumberArea::handleFontSize);
-    connect(codeeditor, &QPlainTextEdit::textChanged, this, &MainWindow::on_plainTextEdit_textChanged);
+    connect(cda, &CodeEditorArea::codeTextChanged, this, &MainWindow::on_plainTextEdit_textChanged);
+
     connect(this, &MainWindow::filechanged, dirtree, &DirTree::changefileDirectory);
     connect(this, &MainWindow::directorychanged, dirtree, &DirTree::changeDirectory);
     connect(dirtree, &DirTree::openFileFromTree, this, &MainWindow::on_actionOpen_from_tree);
@@ -56,9 +56,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    connect(codeeditor, &CodeEditor::blockCountVector, lna, &LineNumberArea::onBlockCountVector);
-    connect(codeeditor, &CodeEditor::scrolledTo, lna, &LineNumberArea::onScrolledTo);
-    connect(lna,&LineNumberArea::selectLine ,codeeditor , &CodeEditor::onSelectLine);
 
     //codeeditor->connect(codeeditor,SIGNAL("textchanged()"),qDebug()<<"jfdhg");
     //horizontallayoutmain->addWidget(dirtree);
@@ -72,8 +69,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     horizontallayoutmain->addWidget(dirmenu);
-    horizontallayoutmain->addWidget(lna);
-    horizontallayoutmain->addWidget(codeeditor);
+    horizontallayoutmain->addWidget(cda);
+    //horizontallayoutmain->addWidget(lna);
+    //horizontallayoutmain->addWidget(codeeditor);
     window->setLayout(horizontallayoutmain);
 
 
@@ -84,8 +82,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete codeeditor;
-    delete lna;
     delete dirtree;
     delete btndir;
     delete btnfile;
@@ -125,7 +121,7 @@ void MainWindow::on_actionNew_triggered(bool deletedintree)
     }
     if(isCanceled and !(isCanceled==1 and hasChanged==true)){
         currentFile.clear();// zobaczyć czy wysyłać emita=====================
-        codeeditor->setPlainText(QString());
+        cda->setText(QString());
         setWindowTitle("Untitled");
         if(hasChanged)
         hasChanged = false;
@@ -150,7 +146,7 @@ void MainWindow::on_actionOpen_triggered()
         emit filechanged(currentFile);
         QTextStream in(&file);
         QString text = in.readAll();
-        codeeditor->setPlainText(text);
+        cda->setText(text);
         hasChanged = false;
         setWindowTitle(filename);
         file.close();
@@ -177,7 +173,7 @@ void MainWindow::on_actionOpen_from_tree(QString path){
             //emit filechanged(currentFile);
             QTextStream in(&file);
             QString text = in.readAll();
-            codeeditor->setPlainText(text);
+            cda->setText(text);
             hasChanged = false;
             setWindowTitle(path);
             file.close();
@@ -225,7 +221,7 @@ void MainWindow::on_actionSave_as_triggered()
     emit filechanged(currentFile);
     setWindowTitle(filename);
     QTextStream out(&file);
-    QString text = codeeditor->toPlainText();
+    QString text = cda->getText();
     out<<text;
     file.close();
 }
@@ -242,7 +238,7 @@ void MainWindow::on_actionSave_triggered()
             return;
         }
         QTextStream out(&file);
-        QString text = codeeditor->toPlainText();
+        QString text = cda->getText();
         //qDebug()<< text;
         out<<text;
         file.close();
@@ -271,28 +267,27 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::on_actionCut_triggered()
 {
-    codeeditor->cut();
+    cda->Cut();
 }
 
 void MainWindow::on_actionCopy_triggered()
 {
-    codeeditor->copy();
+    cda->Copy();
 }
 
 void MainWindow::on_actionPaste_triggered()
 {
-    codeeditor->paste();
+    cda->Paste();
 }
 
 void MainWindow::on_actionDelete_triggered()
 {
-    QTextCursor cur = codeeditor->textCursor();
-    cur.removeSelectedText();
+    cda->Delete();
 }
 
 void MainWindow::on_actionUndo_triggered()
 {
-    codeeditor->undo();
+    cda->Undo();
 }
 
 void MainWindow::on_plainTextEdit_textChanged()
