@@ -18,7 +18,9 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     syntaxhighlighter.cpp \
-    tagstree.cpp
+    tagstree.cpp \
+    tagsuggestion.cpp
+ 
 
 HEADERS += \
     autocomplete.h \
@@ -29,7 +31,9 @@ HEADERS += \
     linenumberarea.h \
     mainwindow.h \
     syntaxhighlighter.h \
-    tagstree.h
+    tagstree.h \
+    tagsuggestion.h
+
 
 FORMS += \
     mainwindow.ui

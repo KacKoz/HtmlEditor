@@ -2,23 +2,28 @@
 #define AUTOCOMPLETE_H
 
 #include <QPlainTextEdit>
+#include <QListWidget>
 
-class Autocomplete : public QObject
+class Autocomplete : public QWidget
 {
     Q_OBJECT
 
 public:
-    Autocomplete(QPlainTextEdit* editor);
+    void runautocomplete(QString editortext,QTextCursor editorcursor,QRect editorcursorpos);
     //Autocomplete();
 signals:
     void closingtag(QString closingtag);
+    void sendcursorpos(QRect point);
+    void hidelist();
 public slots:
-     void ontextchanged();
+
 
 private:
-    QPlainTextEdit* editor;
     bool islessthan=false;
     QString tag= "";
+    //int previouslength =0;
+    //QStringList listoftags = {"html","body","div"};
+    //QListWidget* taglist;
 
 };
 

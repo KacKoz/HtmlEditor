@@ -10,7 +10,9 @@
 
 CodeEditor::CodeEditor()
 {
-    autocomplete = new Autocomplete(this);
+    autocomplete = new Autocomplete();
+    taghints = new Tagsuggestion(this);
+
     QPalette pal;
     pal.setColor(QPalette::Text, Qt::white);
     pal.setColor(QPalette::Base, QRgb(0x5a5a5a));
@@ -21,8 +23,11 @@ CodeEditor::CodeEditor()
     connect(this, &QPlainTextEdit::blockCountChanged, this, &CodeEditor::onBlockCountChange);
     connect(this, &QPlainTextEdit::updateRequest, this, &CodeEditor::onUpdateRequest);
     connect(this, &QPlainTextEdit::cursorPositionChanged, this, &CodeEditor::onCursorMoved);
-    connect(this, &QPlainTextEdit::textChanged,autocomplete, &Autocomplete::ontextchanged);
+    connect(this, &QPlainTextEdit::textChanged,this, &CodeEditor::ontextchanged);
     connect(autocomplete, &Autocomplete::closingtag,this, &CodeEditor::insertclosingtag);
+    connect(autocomplete, &Autocomplete::sendcursorpos,taghints,&Tagsuggestion::movelist);
+    connect(autocomplete, &Autocomplete::hidelist,taghints,&Tagsuggestion::hidelist);
+    connect(this,&CodeEditor::sizechanged,taghints,&Tagsuggestion::parentchangedsize);
 
     this->_linesInBlock.push_back(1);
     _selection.format.setBackground(QColor(QRgb(0x4a4a4a)));
@@ -145,4 +150,14 @@ void CodeEditor::insertclosingtag(QString closingtag)
     cursor.setPosition(cursorpos);
     this->setTextCursor(cursor);
     qDebug()<<this->textCursor().position();
+}
+
+void CodeEditor::ontextchanged()
+{
+    autocomplete->runautocomplete(this->toPlainText(),this->textCursor(),this->cursorRect());
+}
+
+void CodeEditor::resizeEvent(QResizeEvent *event)
+{
+    emit sizechanged(this->viewport());
 }
