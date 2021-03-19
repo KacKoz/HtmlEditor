@@ -1,7 +1,8 @@
 #ifndef CODEEDITOR_H
 #define CODEEDITOR_H
 
-#include <autocomplete.h>
+#include "autocomplete.h"
+#include "tagsuggestion.h"
 
 #include <QPlainTextEdit>
 
@@ -20,6 +21,7 @@ signals:
     void fontSizeChanged(int size);
     void blockCountVector(std::vector<int>*);
     void scrolledTo(int offset);
+    void sizechanged(QWidget* viewport);
 
 public slots:
     void onSelectLine(int line);
@@ -29,9 +31,12 @@ private slots:
     void onUpdateRequest();
     void onCursorMoved();
     void insertclosingtag(QString closingtag);
+    void ontextchanged();
 
 private:
     Autocomplete* autocomplete;
+    Tagsuggestion* taghints;
+    void resizeEvent(QResizeEvent *event);
     void wheelEvent(QWheelEvent *event);
     void highlightCurrentLine();
     void setTextCursorPosition(QTextCursor& tc, int line);
