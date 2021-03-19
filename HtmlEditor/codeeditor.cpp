@@ -29,6 +29,13 @@ CodeEditor::CodeEditor()
     _selection.format.setProperty(QTextFormat::FullWidthSelection, true);
     highlightCurrentLine();
 
+    this->_tags = new TagsTree("D:\\C++\\Studia\\PK4\\HtmlEditor\\HtmlEditor\\HtmlEditor\\tags.txt");
+
+}
+
+CodeEditor::~CodeEditor()
+{
+    delete _tags;
 }
 
 void CodeEditor::wheelEvent(QWheelEvent *event)

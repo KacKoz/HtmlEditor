@@ -16,7 +16,9 @@ SOURCES += \
     dirtree.cpp \
     linenumberarea.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    syntaxhighlighter.cpp \
+    tagstree.cpp
 
 HEADERS += \
     autocomplete.h \
@@ -25,7 +27,9 @@ HEADERS += \
     codeeditorarea.h \
     dirtree.h \
     linenumberarea.h \
-    mainwindow.h
+    mainwindow.h \
+    syntaxhighlighter.h \
+    tagstree.h
 
 FORMS += \
     mainwindow.ui

@@ -8,12 +8,15 @@
 #include <vector>
 #include <QPair>
 
+#include "tagstree.h"
+
 class CodeEditor : public QPlainTextEdit
 {
     Q_OBJECT
 
 public:
     CodeEditor();
+    ~CodeEditor();
 
 
 signals:
@@ -40,7 +43,7 @@ private:
     QTextEdit::ExtraSelection _selection;
     QList<QTextEdit::ExtraSelection> _extraSelections;
 
-
+    TagsTree* _tags = nullptr;
 };
 
 #endif // CODEEDITOR_H
