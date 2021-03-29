@@ -1,12 +1,15 @@
 #ifndef CODEEDITOR_H
 #define CODEEDITOR_H
 
-#include <autocomplete.h>
+#include "autocomplete.h"
+#include "tagsuggestion.h"
 
 #include <QPlainTextEdit>
 
 #include <vector>
 #include <QPair>
+
+#include "tagstree.h"
 
 class CodeEditor : public QPlainTextEdit
 {
@@ -14,24 +17,32 @@ class CodeEditor : public QPlainTextEdit
 
 public:
     CodeEditor();
+    ~CodeEditor();
 
 
 signals:
-    void fontSizeChanged(int size);
+    void fontSizeChanged(int);
     void blockCountVector(std::vector<int>*);
-    void scrolledTo(int offset);
+    void scrolledTo(int);
+    void sizechanged(QWidget*);
 
 public slots:
     void onSelectLine(int line);
+    void writesuggestion(QString tag);
 
 private slots:
     void onBlockCountChange(int count);
     void onUpdateRequest();
     void onCursorMoved();
     void insertclosingtag(QString closingtag);
+    void ontextchanged();
 
 private:
+    void keyPressEvent(QKeyEvent *event);
+    void mousePressEvent(QMouseEvent *e);
     Autocomplete* autocomplete;
+    Tagsuggestion* taghints;
+    void resizeEvent(QResizeEvent *event);
     void wheelEvent(QWheelEvent *event);
     void highlightCurrentLine();
     void setTextCursorPosition(QTextCursor& tc, int line);
@@ -40,7 +51,7 @@ private:
     QTextEdit::ExtraSelection _selection;
     QList<QTextEdit::ExtraSelection> _extraSelections;
 
-
+    TagsTree* _tags = nullptr;
 };
 
 #endif // CODEEDITOR_H

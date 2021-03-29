@@ -44,8 +44,15 @@
     <addaction name="actionPaste"/>
     <addaction name="actionDelete"/>
    </widget>
+   <widget class="QMenu" name="menuParsuj">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionParsuj"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuParsuj"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionNew">
@@ -134,6 +141,11 @@
   <action name="actionNapiszcos">
    <property name="text">
     <string>Napiszcos</string>
+   </property>
+  </action>
+  <action name="actionParsuj">
+   <property name="text">
+    <string>Parsuj</string>
    </property>
   </action>
  </widget>

@@ -12,7 +12,7 @@ public:
 
 signals:
     void askforcurrentdir();
-    void directorychanged(QString name);
+    void directorychanged(QString);
 
 public slots:
     void receivecurrentdir(QString path);

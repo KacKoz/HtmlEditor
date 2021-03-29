@@ -12,18 +12,32 @@ SOURCES += \
     autocomplete.cpp \
     button.cpp \
     codeeditor.cpp \
+    codeeditorarea.cpp \
     dirtree.cpp \
     linenumberarea.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    parser.cpp \
+    syntaxhighlighter.cpp \
+    tagslist.cpp \
+    tagstree.cpp \
+    tagsuggestion.cpp
+ 
 
 HEADERS += \
     autocomplete.h \
     button.h \
     codeeditor.h \
+    codeeditorarea.h \
     dirtree.h \
     linenumberarea.h \
-    mainwindow.h
+    mainwindow.h \
+    parser.h \
+    syntaxhighlighter.h \
+    tagslist.h \
+    tagstree.h \
+    tagsuggestion.h
+
 
 FORMS += \
     mainwindow.ui

@@ -13,11 +13,11 @@ public:
 
 
 signals:
-    void openFileFromTree(QString path);
+    void openFileFromTree(QString);
     void askforcurrentfilename();
-    void filedeleted(bool deletedintree);
-    void currentfilenamechanged(QString name);
-    void currentdirpath(QString path);
+    void filedeleted(bool);
+    void currentfilenamechanged(QString);
+    void currentdirpath(QString);
 
 protected:
     //void contextMenuEvent(QContextMenuEvent *event);
