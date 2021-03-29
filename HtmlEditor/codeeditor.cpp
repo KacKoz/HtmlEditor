@@ -5,14 +5,23 @@
 #include <QDebug>
 #include <QTextBlock>
 #include <QScrollBar>
+#include <QApplication>
+#include <QClipboard>
+#include <QMimeData>
 
 #include <iostream>
+
+class syntaxHighlighter;
 
 CodeEditor::CodeEditor()
 {
     autocomplete = new Autocomplete();
+
     this->_tags = new TagsTree("C:\\Users\\Szymon Sieczko\\Desktop\\Repozytorium\\HtmlEditor\\HtmlEditor\\tags.txt");
     taghints = new Tagsuggestion(this,_tags->taglist);
+
+    sh = new syntaxHighlighter(this);
+
     QPalette pal;
     pal.setColor(QPalette::Text, Qt::white);
     pal.setColor(QPalette::Base, QRgb(0x5a5a5a));
@@ -27,18 +36,18 @@ CodeEditor::CodeEditor()
     connect(autocomplete, &Autocomplete::closingtag,this, &CodeEditor::insertclosingtag);
     connect(autocomplete, &Autocomplete::sendcursorpos,taghints,&Tagsuggestion::movelist);
     connect(autocomplete, &Autocomplete::hidelist,taghints,&Tagsuggestion::hidelist);
+
     connect(autocomplete, &Autocomplete::showlist,taghints,&Tagsuggestion::showlist);
     connect(this,&CodeEditor::sizechanged,taghints,&Tagsuggestion::parentchangedsize);
     connect(autocomplete,&Autocomplete::askforrow,_tags,&TagsTree::getFirstStartingWith);
     connect(_tags,&TagsTree::giverow,autocomplete,&Autocomplete::receiverow);
     connect(taghints,&Tagsuggestion::sendsuggestion,this,&CodeEditor::writesuggestion);
 
+
     this->_linesInBlock.push_back(1);
     _selection.format.setBackground(QColor(QRgb(0x4a4a4a)));
     _selection.format.setProperty(QTextFormat::FullWidthSelection, true);
     highlightCurrentLine();
-
-
 
 }
 
@@ -202,3 +211,5 @@ void CodeEditor::mousePressEvent(QMouseEvent *e)
     taghints->setVisible(false);
     QPlainTextEdit::mousePressEvent(e);
 }
+
+

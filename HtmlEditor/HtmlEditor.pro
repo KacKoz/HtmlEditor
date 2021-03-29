@@ -20,6 +20,7 @@ SOURCES += \
     parser.cpp \
     syntaxhighlighter.cpp \
     tagslist.cpp \
+    syntaxhighlighter.cpp \
     tagstree.cpp \
     tagsuggestion.cpp
  

@@ -1,6 +1,7 @@
 #include "tagsuggestion.h"
 #include <QDebug>
 
+
 Tagsuggestion::Tagsuggestion(QPlainTextEdit* giveparent,QStringList taglist)
 {
     parent = giveparent;
@@ -9,6 +10,7 @@ Tagsuggestion::Tagsuggestion(QPlainTextEdit* giveparent,QStringList taglist)
     //receivetaglist(taglist);
     this->addItems(taglist);
     this->setFixedSize(100,107);
+
     QPalette pal;
     pal.setColor(QPalette::Text, Qt::black);
     pal.setColor(QPalette::Base, Qt::white);
@@ -23,6 +25,7 @@ Tagsuggestion::Tagsuggestion(QPlainTextEdit* giveparent,QStringList taglist)
 }
 
 void Tagsuggestion::movelist(QRect point,int tagrow)
+
 {
     int x=0,y=0;
     QFont f = this->font();
@@ -37,19 +40,23 @@ void Tagsuggestion::movelist(QRect point,int tagrow)
     }
     QPoint* additionalpoint = new QPoint(x,y);
     this->move(point.bottomRight()+*additionalpoint);
+
     delete additionalpoint;
     //this->setVisible(true);//sprawdzic jak dziala to w vs code czyli klikniecie esc plus nie wyszukuje u!!!!!
     movetoitem(tagrow);
+
 }
 
 void Tagsuggestion::hidelist()
 {
     this->setVisible(false);
 }
+
 void Tagsuggestion::showlist()
 {
     this->setVisible(true);
 }
+
 
 void Tagsuggestion::parentchangedsize(QWidget* viewport)
 {
@@ -127,4 +134,5 @@ void Tagsuggestion::onListItemClicked(QListWidgetItem* item)
 {
     emit sendsuggestion(item->text());
 }
+
 

@@ -1,18 +1,23 @@
 #include "tagstree.h"
 #include <QDebug>
 
+
+
 TagsTree::TagsTree(const QString& fileName)
 {
     if(!this->_readTagsFromFile(fileName))
     {
-        qDebug() << "Could not find: " << fileName;
+        qDebug() << "Coudl not find: " << fileName;
+
     }
     else
     {
         qDebug() << "Succesfully read tags from: " << fileName;
     }
+
     _returnNodes(_head);
     qDebug()<<taglist;
+
 }
 
 TagsTree::~TagsTree()
@@ -20,7 +25,9 @@ TagsTree::~TagsTree()
     _deleteTree(_head);
 }
 
+
 void TagsTree::getFirstStartingWith(const QString& text)
+
 {
     node* cur = _head;
     int found = -1;
@@ -43,7 +50,9 @@ void TagsTree::getFirstStartingWith(const QString& text)
         }
 
     }
+
     emit giverow(found);
+
 }
 
 bool TagsTree::isInTree(const QString& tagName)
@@ -132,6 +141,7 @@ void TagsTree::_deleteTree(node* ptr)
     delete ptr;
 }
 
+
 void TagsTree::_returnNodes(node* treeNode)
 {
     if(treeNode==NULL)
@@ -146,4 +156,5 @@ void TagsTree::_returnNodes(node* treeNode)
 //{
 //    emit sendtaglist(taglist);
 //}
+
 
