@@ -1,5 +1,6 @@
 #include "tagstree.h"
 #include <QDebug>
+#include <string>
 
 TagsTree::TagsTree(const QString& fileName)
 {
@@ -12,7 +13,6 @@ TagsTree::TagsTree(const QString& fileName)
         qDebug() << "Succesfully read tags from: " << fileName;
     }
 
-    qDebug() << "di na pozycji: " << getFirstStartingWith("di");
 }
 
 TagsTree::~TagsTree()
@@ -23,15 +23,17 @@ TagsTree::~TagsTree()
 int TagsTree::getFirstStartingWith(const QString& text)
 {
     node* cur = _head;
+    int found = -1;
 
     while(cur)
     {
         if(cur->tag.startsWith(text, Qt::CaseInsensitive))
         {
-            return cur->row;
+
+             found = cur->row;
         }
 
-        if(QString::compare(text, cur->tag) > 0)
+        if(QString::compare(text, cur->tag, Qt::CaseInsensitive) > 0)
         {
             cur = cur->right;
         }
@@ -42,7 +44,7 @@ int TagsTree::getFirstStartingWith(const QString& text)
 
     }
 
-    return -1;
+    return found;
 }
 
 bool TagsTree::isInTree(const QString& tagName)
@@ -130,6 +132,8 @@ void TagsTree::_deleteTree(node* ptr)
 
     delete ptr;
 }
+
+
 
 
 

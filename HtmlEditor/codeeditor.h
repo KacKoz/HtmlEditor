@@ -3,6 +3,7 @@
 
 #include "autocomplete.h"
 #include "tagsuggestion.h"
+#include "syntaxhighlighter.h"
 
 #include <QPlainTextEdit>
 
@@ -41,12 +42,14 @@ private:
     Tagsuggestion* taghints;
     void resizeEvent(QResizeEvent *event);
     void wheelEvent(QWheelEvent *event);
+    void keyPressEvent(QKeyEvent* e);
     void highlightCurrentLine();
     void setTextCursorPosition(QTextCursor& tc, int line);
 
     std::vector<int> _linesInBlock;
     QTextEdit::ExtraSelection _selection;
     QList<QTextEdit::ExtraSelection> _extraSelections;
+    syntaxHighlighter* sh;
 
     TagsTree* _tags = nullptr;
 };

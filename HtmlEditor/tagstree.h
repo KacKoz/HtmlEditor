@@ -22,6 +22,7 @@ public:
     TagsTree(const QString& fileName = "");
     ~TagsTree();
 
+    void print(node* n = nullptr,int wc = 0);
     int getFirstStartingWith(const QString& text);
     bool isInTree(const QString& tagName);
 

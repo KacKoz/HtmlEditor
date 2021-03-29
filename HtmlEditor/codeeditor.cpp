@@ -5,13 +5,19 @@
 #include <QDebug>
 #include <QTextBlock>
 #include <QScrollBar>
+#include <QApplication>
+#include <QClipboard>
+#include <QMimeData>
 
 #include <iostream>
+
+class syntaxHighlighter;
 
 CodeEditor::CodeEditor()
 {
     autocomplete = new Autocomplete();
     taghints = new Tagsuggestion(this);
+    sh = new syntaxHighlighter(this);
 
     QPalette pal;
     pal.setColor(QPalette::Text, Qt::white);
@@ -155,9 +161,15 @@ void CodeEditor::insertclosingtag(QString closingtag)
 void CodeEditor::ontextchanged()
 {
     autocomplete->runautocomplete(this->toPlainText(),this->textCursor(),this->cursorRect());
+
 }
 
 void CodeEditor::resizeEvent(QResizeEvent *event)
 {
     emit sizechanged(this->viewport());
+}
+
+void CodeEditor::keyPressEvent(QKeyEvent* e)
+{
+    QPlainTextEdit::keyPressEvent(e);
 }
