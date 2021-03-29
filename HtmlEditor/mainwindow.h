@@ -11,6 +11,7 @@
 #include "dirtree.h"
 #include "button.h"
 #include "codeeditorarea.h"
+#include "parser.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -60,14 +61,16 @@ private slots:
 
     void newcurrentfilename(QString name);
 
+    void on_actionParsuj_triggered();
+
 public slots:
     void on_actionOpen_from_tree(QString path);
     //void on_treeView_doubleClicked(const QModelIndex &index);
 
 signals:
-    void filechanged(QString name);
-    void directorychanged(QString name);
-    void currentfilename(QString name);
+    void filechanged(QString);
+    void directorychanged(QString);
+    void currentfilename(QString);
 
 
 private:
@@ -82,6 +85,7 @@ private:
     QHBoxLayout *horizontallayoutmain;
     QWidget *window;
     QWidget *dirmenu;
+    Parser *parser;
     bool hasChanged = false;
 
     CodeEditorArea* cda;

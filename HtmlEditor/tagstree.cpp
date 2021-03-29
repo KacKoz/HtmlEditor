@@ -5,14 +5,14 @@ TagsTree::TagsTree(const QString& fileName)
 {
     if(!this->_readTagsFromFile(fileName))
     {
-        qDebug() << "Coudl not find: " << fileName;
+        qDebug() << "Could not find: " << fileName;
     }
     else
     {
         qDebug() << "Succesfully read tags from: " << fileName;
     }
-
-    qDebug() << "di na pozycji: " << getFirstStartingWith("di");
+    _returnNodes(_head);
+    qDebug()<<taglist;
 }
 
 TagsTree::~TagsTree()
@@ -20,18 +20,20 @@ TagsTree::~TagsTree()
     _deleteTree(_head);
 }
 
-int TagsTree::getFirstStartingWith(const QString& text)
+void TagsTree::getFirstStartingWith(const QString& text)
 {
     node* cur = _head;
+    int found = -1;
 
     while(cur)
     {
         if(cur->tag.startsWith(text, Qt::CaseInsensitive))
         {
-            return cur->row;
+
+             found = cur->row;
         }
 
-        if(QString::compare(text, cur->tag) > 0)
+        if(QString::compare(text, cur->tag, Qt::CaseInsensitive) > 0)
         {
             cur = cur->right;
         }
@@ -41,8 +43,7 @@ int TagsTree::getFirstStartingWith(const QString& text)
         }
 
     }
-
-    return -1;
+    emit giverow(found);
 }
 
 bool TagsTree::isInTree(const QString& tagName)
@@ -131,5 +132,18 @@ void TagsTree::_deleteTree(node* ptr)
     delete ptr;
 }
 
+void TagsTree::_returnNodes(node* treeNode)
+{
+    if(treeNode==NULL)
+        return;
+    _returnNodes(treeNode->left);
+    //qDebug()<<treeNode->tag;
+    taglist<<treeNode->tag;
+    _returnNodes(treeNode->right);
+}
 
+//void TagsTree::givetaglist()
+//{
+//    emit sendtaglist(taglist);
+//}
 

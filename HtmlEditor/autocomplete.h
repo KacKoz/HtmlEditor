@@ -3,6 +3,7 @@
 
 #include <QPlainTextEdit>
 #include <QListWidget>
+#include "tagstree.h"
 
 class Autocomplete : public QWidget
 {
@@ -10,17 +11,21 @@ class Autocomplete : public QWidget
 
 public:
     void runautocomplete(QString editortext,QTextCursor editorcursor,QRect editorcursorpos);
-    //Autocomplete();
+    Autocomplete();
 signals:
     void closingtag(QString closingtag);
-    void sendcursorpos(QRect point);
+    void sendcursorpos(QRect point,int tagrow);
     void hidelist();
+    void showlist();
+    void askforrow(QString tag);
 public slots:
-
+    void receiverow(int row);
 
 private:
     bool islessthan=false;
     QString tag= "";
+    int rowoftag;
+    TagsTree* _tags;
     //int previouslength =0;
     //QStringList listoftags = {"html","body","div"};
     //QListWidget* taglist;

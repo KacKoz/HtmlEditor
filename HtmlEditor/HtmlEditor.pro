@@ -17,7 +17,9 @@ SOURCES += \
     linenumberarea.cpp \
     main.cpp \
     mainwindow.cpp \
+    parser.cpp \
     syntaxhighlighter.cpp \
+    tagslist.cpp \
     tagstree.cpp \
     tagsuggestion.cpp
  
@@ -30,7 +32,9 @@ HEADERS += \
     dirtree.h \
     linenumberarea.h \
     mainwindow.h \
+    parser.h \
     syntaxhighlighter.h \
+    tagslist.h \
     tagstree.h \
     tagsuggestion.h
 

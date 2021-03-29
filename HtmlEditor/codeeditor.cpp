@@ -11,8 +11,8 @@
 CodeEditor::CodeEditor()
 {
     autocomplete = new Autocomplete();
-    taghints = new Tagsuggestion(this);
-
+    this->_tags = new TagsTree("C:\\Users\\Szymon Sieczko\\Desktop\\Repozytorium\\HtmlEditor\\HtmlEditor\\tags.txt");
+    taghints = new Tagsuggestion(this,_tags->taglist);
     QPalette pal;
     pal.setColor(QPalette::Text, Qt::white);
     pal.setColor(QPalette::Base, QRgb(0x5a5a5a));
@@ -27,14 +27,18 @@ CodeEditor::CodeEditor()
     connect(autocomplete, &Autocomplete::closingtag,this, &CodeEditor::insertclosingtag);
     connect(autocomplete, &Autocomplete::sendcursorpos,taghints,&Tagsuggestion::movelist);
     connect(autocomplete, &Autocomplete::hidelist,taghints,&Tagsuggestion::hidelist);
+    connect(autocomplete, &Autocomplete::showlist,taghints,&Tagsuggestion::showlist);
     connect(this,&CodeEditor::sizechanged,taghints,&Tagsuggestion::parentchangedsize);
+    connect(autocomplete,&Autocomplete::askforrow,_tags,&TagsTree::getFirstStartingWith);
+    connect(_tags,&TagsTree::giverow,autocomplete,&Autocomplete::receiverow);
+    connect(taghints,&Tagsuggestion::sendsuggestion,this,&CodeEditor::writesuggestion);
 
     this->_linesInBlock.push_back(1);
     _selection.format.setBackground(QColor(QRgb(0x4a4a4a)));
     _selection.format.setProperty(QTextFormat::FullWidthSelection, true);
     highlightCurrentLine();
 
-    this->_tags = new TagsTree("D:\\C++\\Studia\\PK4\\HtmlEditor\\HtmlEditor\\HtmlEditor\\tags.txt");
+
 
 }
 
@@ -149,7 +153,7 @@ void CodeEditor::insertclosingtag(QString closingtag)
     this->blockSignals(false);
     cursor.setPosition(cursorpos);
     this->setTextCursor(cursor);
-    qDebug()<<this->textCursor().position();
+    //qDebug()<<this->textCursor().position();
 }
 
 void CodeEditor::ontextchanged()
@@ -160,4 +164,41 @@ void CodeEditor::ontextchanged()
 void CodeEditor::resizeEvent(QResizeEvent *event)
 {
     emit sizechanged(this->viewport());
+}
+
+void CodeEditor::keyPressEvent(QKeyEvent *event)
+{
+    if((event->key()==Qt::Key_Down || event->key()==Qt::Key_Up || event->key()==Qt::Key_Tab) && !taghints->isHidden())
+    {
+        taghints->setFocus();
+        taghints->keyPressEvent(event);
+    }
+    else
+    {
+        if(event->key()==Qt::Key_Escape)
+            taghints->setVisible(false);
+        QPlainTextEdit::keyPressEvent(event);
+    }
+}
+
+void CodeEditor::writesuggestion(QString tag)
+{
+    QTextCursor cursor = this->textCursor();
+    int cursorpos=cursor.position();
+    while(this->toPlainText()[cursorpos-1]!='<')
+    {
+        this->textCursor().deletePreviousChar();
+        cursorpos--;
+    }
+    this->blockSignals(true);
+    this->textCursor().insertText(tag);
+    this->blockSignals(false);
+    taghints->setVisible(false);
+    autocomplete->runautocomplete(this->toPlainText(),this->textCursor(),this->cursorRect());
+}
+
+void CodeEditor::mousePressEvent(QMouseEvent *e)
+{
+    taghints->setVisible(false);
+    QPlainTextEdit::mousePressEvent(e);
 }

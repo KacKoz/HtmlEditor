@@ -3,42 +3,16 @@
 #include <QMenu>
 
 
-//Autocomplete::Autocomplete(){ qDebug()<<"jeje";}
+Autocomplete::Autocomplete(){
+    this->_tags = new TagsTree("C:\\Users\\Szymon Sieczko\\Desktop\\Repozytorium\\HtmlEditor\\HtmlEditor\\selfclosing.txt");
+}
+
+
 void Autocomplete::runautocomplete(QString editortext,QTextCursor editorcursor,QRect editorcursorpos)
 {
     QTextCursor cursor =editorcursor;
     int cursorpos = cursor.position();
     QString text =editortext;
-//    if(cursorpos>0)
-//    {
-//        //NawetqDebug()<<text[cursorpos-1];
-//        int posless = text.lastIndexOf("<",cursorpos-2);
-//        int posgreater =text.lastIndexOf(">",cursorpos-2);
-//        qDebug()<<cursorpos-2;
-//        qDebug()<<posless;
-//        qDebug()<<posgreater;
-//        if(posless>posgreater)
-//        {
-//            islessthan = true;
-//            if(text[cursorpos-1]==">" and text.length()>previouslength )
-//            {
-//                islessthan=false;
-//                tag=text.mid(posless+1,cursorpos-2-posless);
-//                if(text.indexOf("</"+tag+">",cursorpos)!=cursorpos and tag!="")
-//                    emit closingtag("</"+tag+">");
-//                emit hidelist();
-//            }
-//        }
-//        else
-//        {
-//            islessthan =false;
-//            emit hidelist();
-//        }
-//        if(islessthan)
-//            emit sendcursorpos(editor->cursorRect());
-//    }
-//    previouslength=text.length();
-
     if(cursorpos>0)
     {
         QString textbeforecursor = text.left(cursorpos);
@@ -50,26 +24,38 @@ void Autocomplete::runautocomplete(QString editortext,QTextCursor editorcursor,Q
         if(posless>posgreater)
         {
             islessthan = true;
+            if(text[cursorpos-1]=="<")
+                emit showlist();
             tag=textbeforecursor.mid(posless);
             //qDebug()<<tag;
         }
         else
         {
-            if(text[cursorpos-1]==">" and tag.mid(1)!=nullptr)
+            //qDebug()<<text[cursorpos-1];
+            if(text[cursorpos-1]==">" and tag.mid(1)!=nullptr and tag.mid(1).indexOf('/')<0 and !_tags->isInTree(tag.mid(1,tag.indexOf(' ')-1)))
             {
-                emit closingtag("</"+tag.mid(1)+">");
-                qDebug()<<"</"+tag.mid(1)+">";
+                emit closingtag("</"+tag.mid(1,tag.indexOf(' ')-1)+">");
+                //qDebug()<<"</"+tag.mid(1)+">";
             }
             tag="";
             islessthan = false;
             emit hidelist();
         }
         if(islessthan)
-            emit sendcursorpos(editorcursorpos);
+        {
+            //qDebug()<<tag.mid(1);
+            emit askforrow(tag.mid(1));
+            emit sendcursorpos(editorcursorpos,rowoftag);
+        }
     }
     else
     {
         emit hidelist();
     }
 
+}
+
+void Autocomplete::receiverow(int row)
+{
+    rowoftag=row;
 }

@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     horizontallayoutbuttons = new QHBoxLayout;
     window = new QWidget;
     dirmenu = new QWidget;
-
+    parser = new Parser();
 
     connect(cda, &CodeEditorArea::codeTextChanged, this, &MainWindow::on_plainTextEdit_textChanged);
 
@@ -319,4 +319,10 @@ void MainWindow::newcurrentfilename(QString name)
     else
         setWindowTitle(
                     currentFile);
+}
+
+
+void MainWindow::on_actionParsuj_triggered()
+{
+    parser->parsuj(cda->getText());
 }
