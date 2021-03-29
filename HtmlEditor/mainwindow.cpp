@@ -35,7 +35,6 @@ MainWindow::MainWindow(QWidget *parent)
     parser = new Parser();
 
     connect(cda, &CodeEditorArea::codeTextChanged, this, &MainWindow::on_plainTextEdit_textChanged);
-
     connect(this, &MainWindow::filechanged, dirtree, &DirTree::changefileDirectory);
     connect(this, &MainWindow::directorychanged, dirtree, &DirTree::changeDirectory);
     connect(dirtree, &DirTree::openFileFromTree, this, &MainWindow::on_actionOpen_from_tree);

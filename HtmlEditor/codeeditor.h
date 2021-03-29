@@ -3,6 +3,8 @@
 
 #include "autocomplete.h"
 #include "tagsuggestion.h"
+#include "syntaxhighlighter.h"
+
 
 #include <QPlainTextEdit>
 
@@ -25,6 +27,10 @@ signals:
     void blockCountVector(std::vector<int>*);
     void scrolledTo(int);
     void sizechanged(QWidget*);
+<<<<<<< HEAD
+=======
+
+>>>>>>> Szymon
 
 public slots:
     void onSelectLine(int line);
@@ -50,6 +56,7 @@ private:
     std::vector<int> _linesInBlock;
     QTextEdit::ExtraSelection _selection;
     QList<QTextEdit::ExtraSelection> _extraSelections;
+    syntaxHighlighter* sh;
 
     TagsTree* _tags = nullptr;
 };
