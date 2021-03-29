@@ -3,28 +3,17 @@
 #include <QMenu>
 
 
-<<<<<<< HEAD
-Autocomplete::Autocomplete(){
-    this->_tags = new TagsTree("C:\\Users\\Szymon Sieczko\\Desktop\\Repozytorium\\HtmlEditor\\HtmlEditor\\selfclosing.txt");
-}
-
-
-=======
 
 Autocomplete::Autocomplete(){
     this->_tags = new TagsTree("D:\\C++\\Studia\\PK4\\HtmlEditor\\HtmlEditor\\HtmlEditor\\selfclosing.txt");
 }
 
->>>>>>> Szymon
 void Autocomplete::runautocomplete(QString editortext,QTextCursor editorcursor,QRect editorcursorpos)
 {
     QTextCursor cursor =editorcursor;
     int cursorpos = cursor.position();
     QString text =editortext;
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon
     if(cursorpos>0)
     {
         QString textbeforecursor = text.left(cursorpos);
@@ -48,10 +37,7 @@ void Autocomplete::runautocomplete(QString editortext,QTextCursor editorcursor,Q
             {
                 emit closingtag("</"+tag.mid(1,tag.indexOf(' ')-1)+">");
                 //qDebug()<<"</"+tag.mid(1)+">";
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon
             }
             tag="";
             islessthan = false;
@@ -63,13 +49,9 @@ void Autocomplete::runautocomplete(QString editortext,QTextCursor editorcursor,Q
             //qDebug()<<tag.mid(1);
             emit askforrow(tag.mid(1));
             emit sendcursorpos(editorcursorpos,rowoftag);
-<<<<<<< HEAD
-        }
-=======
 
         }
 
->>>>>>> Szymon
     }
     else
     {
@@ -81,8 +63,5 @@ void Autocomplete::runautocomplete(QString editortext,QTextCursor editorcursor,Q
 void Autocomplete::receiverow(int row)
 {
     rowoftag=row;
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon
 }

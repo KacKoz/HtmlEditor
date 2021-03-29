@@ -9,10 +9,7 @@ class Tagsuggestion : public QListWidget
     Q_OBJECT
 
 public:
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon
     Tagsuggestion(QPlainTextEdit* parent,QStringList taglist);
     void keyPressEvent(QKeyEvent *event);
 public slots:
@@ -32,10 +29,7 @@ private:
     QPlainTextEdit* parent;
     QStringList taglist;
     int selectedrow=-1;
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon
 };
 
 

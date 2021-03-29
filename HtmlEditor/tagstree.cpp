@@ -7,26 +7,17 @@ TagsTree::TagsTree(const QString& fileName)
 {
     if(!this->_readTagsFromFile(fileName))
     {
-<<<<<<< HEAD
-        qDebug() << "Could not find: " << fileName;
-=======
         qDebug() << "Coudl not find: " << fileName;
 
->>>>>>> Szymon
     }
     else
     {
         qDebug() << "Succesfully read tags from: " << fileName;
     }
-<<<<<<< HEAD
-    _returnNodes(_head);
-    qDebug()<<taglist;
-=======
 
     _returnNodes(_head);
     qDebug()<<taglist;
 
->>>>>>> Szymon
 }
 
 TagsTree::~TagsTree()
@@ -34,13 +25,9 @@ TagsTree::~TagsTree()
     _deleteTree(_head);
 }
 
-<<<<<<< HEAD
-void TagsTree::getFirstStartingWith(const QString& text)
-=======
 
 void TagsTree::getFirstStartingWith(const QString& text)
 
->>>>>>> Szymon
 {
     node* cur = _head;
     int found = -1;
@@ -63,13 +50,9 @@ void TagsTree::getFirstStartingWith(const QString& text)
         }
 
     }
-<<<<<<< HEAD
-    emit giverow(found);
-=======
 
     emit giverow(found);
 
->>>>>>> Szymon
 }
 
 bool TagsTree::isInTree(const QString& tagName)
@@ -158,6 +141,7 @@ void TagsTree::_deleteTree(node* ptr)
     delete ptr;
 }
 
+
 void TagsTree::_returnNodes(node* treeNode)
 {
     if(treeNode==NULL)
@@ -168,25 +152,9 @@ void TagsTree::_returnNodes(node* treeNode)
     _returnNodes(treeNode->right);
 }
 
-<<<<<<< HEAD
-=======
-void TagsTree::_returnNodes(node* treeNode)
-{
-    if(treeNode==NULL)
-        return;
-    _returnNodes(treeNode->left);
-    //qDebug()<<treeNode->tag;
-    taglist<<treeNode->tag;
-    _returnNodes(treeNode->right);
-}
-
->>>>>>> Szymon
 //void TagsTree::givetaglist()
 //{
 //    emit sendtaglist(taglist);
 //}
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon
 

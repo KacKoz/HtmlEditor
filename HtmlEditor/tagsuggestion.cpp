@@ -1,10 +1,7 @@
 #include "tagsuggestion.h"
 #include <QDebug>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon
 Tagsuggestion::Tagsuggestion(QPlainTextEdit* giveparent,QStringList taglist)
 {
     parent = giveparent;
@@ -13,10 +10,7 @@ Tagsuggestion::Tagsuggestion(QPlainTextEdit* giveparent,QStringList taglist)
     //receivetaglist(taglist);
     this->addItems(taglist);
     this->setFixedSize(100,107);
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon
     QPalette pal;
     pal.setColor(QPalette::Text, Qt::black);
     pal.setColor(QPalette::Base, Qt::white);
@@ -31,10 +25,7 @@ Tagsuggestion::Tagsuggestion(QPlainTextEdit* giveparent,QStringList taglist)
 }
 
 void Tagsuggestion::movelist(QRect point,int tagrow)
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon
 {
     int x=0,y=0;
     QFont f = this->font();
@@ -49,26 +40,16 @@ void Tagsuggestion::movelist(QRect point,int tagrow)
     }
     QPoint* additionalpoint = new QPoint(x,y);
     this->move(point.bottomRight()+*additionalpoint);
-<<<<<<< HEAD
-    delete additionalpoint;
-    //this->setVisible(true);//sprawdzic jak dziala to w vs code czyli klikniecie esc plus nie wyszukuje u!!!!!
-    movetoitem(tagrow);
-=======
 
     delete additionalpoint;
     //this->setVisible(true);//sprawdzic jak dziala to w vs code czyli klikniecie esc plus nie wyszukuje u!!!!!
     movetoitem(tagrow);
 
->>>>>>> Szymon
 }
 
 void Tagsuggestion::hidelist()
 {
     this->setVisible(false);
-}
-void Tagsuggestion::showlist()
-{
-    this->setVisible(true);
 }
 
 void Tagsuggestion::showlist()
@@ -154,7 +135,4 @@ void Tagsuggestion::onListItemClicked(QListWidgetItem* item)
     emit sendsuggestion(item->text());
 }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon

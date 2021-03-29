@@ -12,10 +12,7 @@
 #include "button.h"
 #include "codeeditorarea.h"
 #include "parser.h"
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

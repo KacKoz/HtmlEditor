@@ -27,10 +27,7 @@ signals:
     void blockCountVector(std::vector<int>*);
     void scrolledTo(int);
     void sizechanged(QWidget*);
-<<<<<<< HEAD
-=======
 
->>>>>>> Szymon
 
 public slots:
     void onSelectLine(int line);
