@@ -5,7 +5,7 @@
 
 
 Autocomplete::Autocomplete(){
-    this->_tags = new TagsTree("C:\\Users\\Szymon Sieczko\\Desktop\\Repozytorium\\HtmlEditor\\HtmlEditor\\selfclosing.txt");
+    this->_tags = new TagsTree("selfclosing.txt");
 }
 
 void Autocomplete::runautocomplete(QString editortext,QTextCursor editorcursor,QRect editorcursorpos)

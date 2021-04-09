@@ -16,7 +16,7 @@ Parser::Parser()
 void Parser::parsuj(QString text)
 {
     list.head=nullptr;
-    _tags = new TagsTree("C:\\Users\\Szymon Sieczko\\Desktop\\Repozytorium\\HtmlEditor\\HtmlEditor\\selfclosing.txt");
+    _tags = new TagsTree("selfclosing.txt");
     Node<QString> *current= nullptr;//, *parent=nullptr;
     bool isLessThan = false, wasSpace=false, wasQuotation=false, wasClosing = false;
     QString tag="";

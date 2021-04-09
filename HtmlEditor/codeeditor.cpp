@@ -8,6 +8,7 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QMimeData>
+#include <QDir>
 
 #include <iostream>
 
@@ -17,7 +18,7 @@ CodeEditor::CodeEditor()
 {
     autocomplete = new Autocomplete();
 
-    this->_tags = new TagsTree("C:\\Users\\Szymon Sieczko\\Desktop\\Repozytorium\\HtmlEditor\\HtmlEditor\\tags.txt");
+    this->_tags = new TagsTree("tags.txt");
     taghints = new Tagsuggestion(this,_tags->taglist);
 
     sh = new syntaxHighlighter(this);
