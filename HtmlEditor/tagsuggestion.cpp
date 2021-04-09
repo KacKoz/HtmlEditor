@@ -70,7 +70,7 @@ void Tagsuggestion::movetoitem(int row)
     QListWidgetItem* scrollto;
     if(row>=0)
     {
-        if(selectedrow>row)
+        if(selectedrow>row || selectedrow<row)
         {
              scrollto = this->item(row);
         }

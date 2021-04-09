@@ -49,6 +49,7 @@
      <string>Settings</string>
     </property>
     <addaction name="actionParsuj"/>
+    <addaction name="actionShow_hide_preview"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -146,6 +147,14 @@
   <action name="actionParsuj">
    <property name="text">
     <string>Parsuj</string>
+   </property>
+  </action>
+  <action name="actionShow_hide_preview">
+   <property name="text">
+    <string>Show/hide preview</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>

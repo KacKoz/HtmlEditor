@@ -29,6 +29,7 @@ CodeEditorArea::~CodeEditorArea()
 void CodeEditorArea::onTextChanged()
 {
     emit codeTextChanged();
+    emit newText(this->getText());
 }
 
 void CodeEditorArea::setText(const QString& text)

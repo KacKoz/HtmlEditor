@@ -93,11 +93,20 @@ void syntaxHighlighter::highlightBlock( const QString& text)
                         state = currentState::beggining;
 
                 }
-                else if(startIndex != -1 && (text[i] == '='))
+                else if(startIndex != -1)
                 {
                     setFormat(startIndex, i-startIndex, colors.attributeColor);
-                    startIndex = -1;
-                    state = currentState::value;
+                    if(text[i] == '=')
+                    {
+                        startIndex = -1;
+                        state = currentState::value;
+                    }
+                    else if(text[i] == '>')
+                    {
+                        state = currentState::beggining;
+                        startIndex = -1;
+                    }
+
                 }
                 break;
             }
@@ -307,7 +316,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
 
     }
 
-    //qDebug()<<"Koniec bloku z " << currentBlockState();
+   // qDebug()<<"Koniec bloku z " << currentBlockState();
 
 
   }

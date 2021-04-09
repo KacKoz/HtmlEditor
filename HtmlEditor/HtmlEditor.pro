@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui 
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     autocomplete.cpp \
+    browserview.cpp \
     button.cpp \
     codeeditor.cpp \
     codeeditorarea.cpp \
@@ -26,6 +27,7 @@ SOURCES += \
 
 HEADERS += \
     autocomplete.h \
+    browserview.h \
     button.h \
     codeeditor.h \
     codeeditorarea.h \
