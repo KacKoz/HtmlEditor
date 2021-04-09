@@ -29,18 +29,26 @@ public:
 //private:
     TagsList(){head=nullptr;}
     Node<T>* head;
-    void print(Node<T>* node)
+    void print(Node<T>* node, int x)
     {
         if(!node)
             return;
-        qDebug()<<node->data;
-        print(node->child);
-        Node<T>* p = node->sibling;
-        while(p)
-        {
-            print(p);
-            p=p->sibling;
-        }
+        QString tab ="";
+        for(int i =0;i<x;i++)
+            tab+=' ';
+        //qDebug()<<tab+node->data;
+        print(node->child,++x);
+        x--;
+        print(node->sibling,x);
+    }
+    void deleteTagsList(Node<T>* node)
+    {
+        if(!node)
+            return;
+        deleteTagsList(node->child);
+        deleteTagsList(node->sibling);
+        //qDebug()<<node->data;
+        delete node;
     }
 };
 

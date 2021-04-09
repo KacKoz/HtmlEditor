@@ -16,7 +16,7 @@ TagsTree::TagsTree(const QString& fileName)
     }
 
     _returnNodes(_head);
-    qDebug()<<taglist;
+    //qDebug()<<taglist;
 
 }
 

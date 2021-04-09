@@ -5,7 +5,7 @@
 
 
 Autocomplete::Autocomplete(){
-    this->_tags = new TagsTree("D:\\C++\\Studia\\PK4\\HtmlEditor\\HtmlEditor\\HtmlEditor\\selfclosing.txt");
+    this->_tags = new TagsTree("C:\\Users\\Szymon Sieczko\\Desktop\\Repozytorium\\HtmlEditor\\HtmlEditor\\selfclosing.txt");
 }
 
 void Autocomplete::runautocomplete(QString editortext,QTextCursor editorcursor,QRect editorcursorpos)
@@ -33,7 +33,7 @@ void Autocomplete::runautocomplete(QString editortext,QTextCursor editorcursor,Q
         else
         {
             //qDebug()<<text[cursorpos-1];
-            if(text[cursorpos-1]==">" and tag.mid(1)!=nullptr and tag.mid(1).indexOf('/')<0 and !_tags->isInTree(tag.mid(1,tag.indexOf(' ')-1)))
+            if(text[cursorpos-1]==">" and tag.mid(1)!=nullptr and tag.mid(1).indexOf('/')<0 and tag.mid(1).indexOf('!')<0 and !_tags->isInTree(tag.mid(1,tag.indexOf(' ')-1)))
             {
                 emit closingtag("</"+tag.mid(1,tag.indexOf(' ')-1)+">");
                 //qDebug()<<"</"+tag.mid(1)+">";

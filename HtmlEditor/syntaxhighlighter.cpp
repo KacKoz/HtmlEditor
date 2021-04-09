@@ -10,7 +10,7 @@ syntaxHighlighter::syntaxHighlighter(QPlainTextEdit* codeeditor)
 
 void syntaxHighlighter::highlightBlock( const QString& text)
 {
-    qDebug() << "Last line: " << previousBlockState();
+    //qDebug() << "Last line: " << previousBlockState();
 
     if(text.length() == 0)
     {
@@ -307,7 +307,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
 
     }
 
-    qDebug()<<"Koniec bloku z " << currentBlockState();
+    //qDebug()<<"Koniec bloku z " << currentBlockState();
 
 
   }

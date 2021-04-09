@@ -323,5 +323,20 @@ void MainWindow::newcurrentfilename(QString name)
 
 void MainWindow::on_actionParsuj_triggered()
 {
-    parser->parsuj(cda->getText());
+    try
+    {
+        parser->parsuj(cda->getText());
+        parser->list.print(parser->list.head,0);
+        parser->parserTree.clear();
+        parser->fillTree(parser->list.head);
+        parser->parserTree.show();
+        parser->list.deleteTagsList(parser->list.head);
+    }
+    catch(int i)
+    {
+        if(i)
+            parser->lackoftag("Closing");
+        else
+            parser->lackoftag("Opening");
+    }
 }

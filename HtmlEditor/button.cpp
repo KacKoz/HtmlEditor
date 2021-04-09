@@ -4,6 +4,7 @@
 #include <QInputDialog>
 #include <QDir>
 #include <QMessageBox>
+#include <regex>
 
 Button::Button(QString text)
 {
@@ -18,18 +19,25 @@ void Button::makedir(){
     if(currentdir!="")
     {
         QString name = QInputDialog::getText(this,"Create directory","Enter a name:",QLineEdit::Normal);
-        for(int i =0;i<9;i++)
+//        for(int i =0;i<9;i++)
+//        {
+//            if(name.indexOf(forbiddennames[i])>=0 or name.length()==0)
+//            {
+//                infoinvalidname("directory");
+//                return;
+//            }
+//        }
+        if(std::regex_match(name.toStdString(),std::regex("[^\\\\/:*?<>|\"]+")))
         {
-            if(name.indexOf(forbiddennames[i])>=0 or name.length()==0)
-            {
-                infoinvalidname("directory");
-                return;
-            }
+            QDir dir(currentdir+"/"+name);
+            //qDebug()<<currentdir+"/"+name;
+            if (!dir.exists())
+                dir.mkpath(currentdir+"/"+name);
         }
-        QDir dir(currentdir+"/"+name);
-        //qDebug()<<currentdir+"/"+name;
-        if (!dir.exists())
-            dir.mkpath(currentdir+"/"+name);
+        else
+        {
+            infoinvalidname("directory");
+        }
     }
     else
     {
@@ -45,25 +53,32 @@ void Button::makefile(){
     if(currentdir!="")
     {
         QString name = QInputDialog::getText(this,"Create file","Enter a name:",QLineEdit::Normal,"*.txt");
-        for(int i =0;i<9;i++)
+//        for(int i =0;i<9;i++)
+//        {
+//            if(name.indexOf(forbiddennames[i])>=0 or name.length()==0)
+//            {
+//                infoinvalidname("file");
+//                return;
+//            }
+//        }
+        if(std::regex_match(name.toStdString(),std::regex("[^\\\\/:*?<>|]+\\.(txt|html)")))
         {
-            if(name.indexOf(forbiddennames[i])>=0 or name.length()==0)
+            QFile file(currentdir+"/"+name);
+            //qDebug()<<currentdir+"/"+name;
+            if (!file.exists())
             {
-                infoinvalidname("file");
-                return;
+                if (file.open(QIODevice::ReadWrite)) {
+                        QTextStream stream(&file);
+                        //stream << "something" << endl;
+                        file.close();
+                    }
+                else
+                    qDebug() << "file open error";
             }
         }
-        QFile file(currentdir+"/"+name);
-        //qDebug()<<currentdir+"/"+name;
-        if (!file.exists())
+        else
         {
-            if (file.open(QIODevice::ReadWrite)) {
-                    QTextStream stream(&file);
-                    //stream << "something" << endl;
-                    file.close();
-                }
-            else
-                qDebug() << "file open error";
+            infoinvalidname("file");
         }
     }
     else
