@@ -6,12 +6,14 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 
+
 #include "codeeditor.h"
 #include "linenumberarea.h"
 #include "dirtree.h"
 #include "button.h"
 #include "codeeditorarea.h"
 #include "parser.h"
+#include "browserview.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -58,14 +60,15 @@ private slots:
 
     void on_actionOpen_directory_triggered();
 
-    void givecurrentfilename();
-
     void newcurrentfilename(QString name);
 
     void on_actionParsuj_triggered();
 
+    void on_actionShow_hide_preview_triggered();
+
 public slots:
     void on_actionOpen_from_tree(QString path);
+    void givecurrentfilename();
     //void on_treeView_doubleClicked(const QModelIndex &index);
 
 signals:
@@ -88,6 +91,7 @@ private:
     QWidget *dirmenu;
     Parser *parser;
     bool hasChanged = false;
+    BrowserView *browser;
 
     CodeEditorArea* cda;
 };

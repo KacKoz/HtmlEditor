@@ -26,8 +26,9 @@ public:
 signals:
 
     void codeTextChanged();
+    void newText(const QString& s);
 
-private slots:
+public slots:
 
     void onTextChanged();
 

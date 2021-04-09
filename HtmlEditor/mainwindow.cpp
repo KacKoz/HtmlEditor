@@ -16,6 +16,7 @@
 #include <string>
 
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -33,6 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
     window = new QWidget;
     dirmenu = new QWidget;
     parser = new Parser();
+    browser = new BrowserView();
+
 
     connect(cda, &CodeEditorArea::codeTextChanged, this, &MainWindow::on_plainTextEdit_textChanged);
     connect(this, &MainWindow::filechanged, dirtree, &DirTree::changefileDirectory);
@@ -52,7 +55,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(btnparent,&Button::askforcurrentdir,dirtree,&DirTree::givecurrentdir);
     connect(dirtree,&DirTree::currentdirpath,btnparent,&Button::receivecurrentdir);
     connect(btnparent, &Button::directorychanged, dirtree, &DirTree::changeDirectory);
-
+    //connect(browser, &BrowserView::askForFileName, this, &MainWindow::givecurrentfilename);
+    connect(cda, &CodeEditorArea::newText, browser, &BrowserView::onNewText);
 
 
 
@@ -76,6 +80,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->setCentralWidget(window);
     setWindowTitle("Untitled");
+
+
+
+
+
+    //QDesktopServices::openUrl(QUrl::fromLocalFile("Stronka/index.html"));
 }
 
 MainWindow::~MainWindow()
@@ -90,7 +100,7 @@ MainWindow::~MainWindow()
     delete dirmenu;
     delete horizontallayoutmain;
     delete window;
-
+    delete browser;
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -324,4 +334,15 @@ void MainWindow::newcurrentfilename(QString name)
 void MainWindow::on_actionParsuj_triggered()
 {
     parser->parsuj(cda->getText());
+}
+
+void MainWindow::on_actionShow_hide_preview_triggered()
+{
+    if(browser->isVisible())
+        browser->setVisible(false);
+    else
+    {
+        browser->setVisible(true);
+        cda->onTextChanged();
+    }
 }
