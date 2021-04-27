@@ -1,14 +1,44 @@
 #include "tagsuggestion.h"
 #include <QDebug>
+#include <QPlainTextEdit>
+#include <exception>
+#include <QMessageBox>
 
 
-Tagsuggestion::Tagsuggestion(QPlainTextEdit* giveparent,QStringList taglist)
+Tagsuggestion::Tagsuggestion(QPlainTextEdit* giveparent)
 {
+    try
+    {
+        _tags =new TagsTree("tags.txt");
+        this->addItems(_tags->taglist);
+    }
+    catch(std::exception &e)
+    {
+        qDebug()<<e.what();
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.setWindowTitle("Error");
+        msgBox.setText(e.what());
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        int ret = msgBox.exec();
+        switch (ret)
+        {
+          case QMessageBox::Ok:
+              msgBox.close();
+              break;
+          default:
+              msgBox.close();
+              break;
+        }
+        exit(-1);
+    }
+
     parent = giveparent;
     this->setParent(parent);
     //emit askfortaglist();
     //receivetaglist(taglist);
-    this->addItems(taglist);
+    //this->addItems(_tags->taglist);
     this->setFixedSize(100,107);
 
     QPalette pal;
@@ -20,8 +50,12 @@ Tagsuggestion::Tagsuggestion(QPlainTextEdit* giveparent,QStringList taglist)
     this->show();
     this->setVisible(false);
     parentviewport = parent->viewport();
-
     connect(this,&Tagsuggestion::itemClicked,this,&Tagsuggestion::onListItemClicked);
+}
+
+Tagsuggestion::~Tagsuggestion()
+{
+    delete _tags;
 }
 
 void Tagsuggestion::movelist(QRect point,int tagrow)
@@ -67,10 +101,11 @@ void Tagsuggestion::movetoitem(int row)
 {
     //qDebug()<<row;
     //qDebug()<<this->count();
+
     QListWidgetItem* scrollto;
     if(row>=0)
     {
-        if(selectedrow>row || selectedrow<row)
+        if(selectedrow>row)
         {
              scrollto = this->item(row);
         }

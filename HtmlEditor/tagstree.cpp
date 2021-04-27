@@ -7,14 +7,8 @@ TagsTree::TagsTree(const QString& fileName)
 {
     if(!this->_readTagsFromFile(fileName))
     {
-        qDebug() << "Coudl not find: " << fileName;
-
+        throw std::runtime_error("Could not find: " + fileName.toStdString());
     }
-    else
-    {
-        qDebug() << "Succesfully read tags from: " << fileName;
-    }
-
     _returnNodes(_head);
     //qDebug()<<taglist;
 

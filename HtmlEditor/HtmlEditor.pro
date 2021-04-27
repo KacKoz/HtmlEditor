@@ -10,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
     autocomplete.cpp \
+    autosave.cpp \
     browserview.cpp \
     button.cpp \
     codeeditor.cpp \
@@ -27,6 +28,7 @@ SOURCES += \
 
 HEADERS += \
     autocomplete.h \
+    autosave.h \
     browserview.h \
     button.h \
     codeeditor.h \

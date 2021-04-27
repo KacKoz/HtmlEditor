@@ -14,6 +14,7 @@
 #include <iostream>
 #include <QDebug>
 #include <string>
+#include <QThread>
 
 
 
@@ -35,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     dirmenu = new QWidget;
     parser = new Parser();
     browser = new BrowserView();
-
+    autosave = new Autosave();
 
     connect(cda, &CodeEditorArea::codeTextChanged, this, &MainWindow::on_plainTextEdit_textChanged);
     connect(this, &MainWindow::filechanged, dirtree, &DirTree::changefileDirectory);
@@ -57,8 +58,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(btnparent, &Button::directorychanged, dirtree, &DirTree::changeDirectory);
     //connect(browser, &BrowserView::askForFileName, this, &MainWindow::givecurrentfilename);
     connect(cda, &CodeEditorArea::newText, browser, &BrowserView::onNewText);
-
-
+    connect(this, &MainWindow::filechanged, cda, &CodeEditorArea::receiveCurrentFileNameMiddle);
+    connect(this, &MainWindow::stopthread, autosave, &Autosave::stopthread);
+    connect(autosave, &Autosave::runsave, this, &MainWindow::autosaveRequest);
+    connect(this, &MainWindow::wordWrapChanged, cda, &CodeEditorArea::receiveWordWrapMiddle);
+    connect(this, &MainWindow::filechanged, this, &MainWindow::fileChangedSlot);
 
     //codeeditor->connect(codeeditor,SIGNAL("textchanged()"),qDebug()<<"jfdhg");
     //horizontallayoutmain->addWidget(dirtree);
@@ -81,11 +85,6 @@ MainWindow::MainWindow(QWidget *parent)
     this->setCentralWidget(window);
     setWindowTitle("Untitled");
 
-
-
-
-
-    //QDesktopServices::openUrl(QUrl::fromLocalFile("Stronka/index.html"));
 }
 
 MainWindow::~MainWindow()
@@ -101,6 +100,8 @@ MainWindow::~MainWindow()
     delete horizontallayoutmain;
     delete window;
     delete browser;
+    delete parser;
+    delete autosave;
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -130,6 +131,8 @@ void MainWindow::on_actionNew_triggered(bool deletedintree)
     }
     if(isCanceled and !(isCanceled==1 and hasChanged==true)){
         currentFile.clear();// zobaczyć czy wysyłać emita=====================
+        emit filechanged(currentFile);
+        fileChangedSlot(currentFile);
         cda->setText(QString());
         setWindowTitle("Untitled");
         if(hasChanged)
@@ -159,6 +162,28 @@ void MainWindow::on_actionOpen_triggered()
         hasChanged = false;
         setWindowTitle(filename);
         file.close();
+// ////////////////////////////////////////////////////////////////////////////////////
+//        try
+//        {
+//            QString filename = QFileDialog::getOpenFileName(this,"Open the file");
+//            QFile file(filename);
+//            if(!file.open(QIODevice::ReadOnly | QFile::Text)){
+//                throw 1;
+//            }
+//            currentFile=filename;
+//            emit filechanged(currentFile);
+//            QTextStream in(&file);
+//            QString text = in.readAll();
+//            cda->setText(text);
+//            hasChanged = false;
+//            setWindowTitle(filename);
+//            file.close();
+//        }
+//        catch(...)
+//        {
+//            QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
+//            return;
+//        }
     }
 }
 
@@ -179,7 +204,7 @@ void MainWindow::on_actionOpen_from_tree(QString path){
                 return;
             }
             currentFile=path;
-            //emit filechanged(currentFile);
+            emit filechanged(currentFile);
             QTextStream in(&file);
             QString text = in.readAll();
             cda->setText(text);
@@ -238,22 +263,25 @@ void MainWindow::on_actionSave_as_triggered()
 void MainWindow::on_actionSave_triggered()
 {
     //qDebug()<<currentFile;
-    if(currentFile !=""){
-        setWindowTitle(windowTitle().replace(0,1,""));
-        hasChanged=false;
-        QFile file(currentFile);
-        if(!file.open(QIODevice::WriteOnly | QFile::Text)){
-            QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
-            return;
+    if(hasChanged)
+    {
+        if(currentFile !=""){
+            setWindowTitle(windowTitle().replace(0,1,""));
+            hasChanged=false;
+            QFile file(currentFile);
+            if(!file.open(QIODevice::WriteOnly | QFile::Text)){
+                QMessageBox::warning(this,"Warning","Cannot open file: "+file.errorString());
+                return;
+            }
+            QTextStream out(&file);
+            QString text = cda->getText();
+            //qDebug()<< text;
+            out<<text;
+            file.close();
         }
-        QTextStream out(&file);
-        QString text = cda->getText();
-        //qDebug()<< text;
-        out<<text;
-        file.close();
-    }
-    else{
-        on_actionSave_as_triggered();
+        else{
+            on_actionSave_as_triggered();
+        }
     }
 }
 
@@ -271,6 +299,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if(!isCanceled or (isCanceled==1 and hasChanged==true)){
         event->ignore();
     }
+    parser->parserTree.close();
 }
 
 
@@ -326,29 +355,19 @@ void MainWindow::newcurrentfilename(QString name)
     if(hasChanged)
         setWindowTitle("*"+currentFile);
     else
-        setWindowTitle(
-                    currentFile);
+        setWindowTitle(currentFile);
+    emit filechanged(name);
 }
 
 
 void MainWindow::on_actionParsuj_triggered()
 {
-    try
-    {
-        parser->parsuj(cda->getText());
-        parser->list.print(parser->list.head,0);
-        parser->parserTree.clear();
-        parser->fillTree(parser->list.head);
-        parser->parserTree.show();
-        parser->list.deleteTagsList(parser->list.head);
-    }
-    catch(int i)
-    {
-        if(i)
-            parser->lackoftag("Closing");
-        else
-            parser->lackoftag("Opening");
-    }
+    parser->parsuj(cda->getText());
+    parser->list.print(parser->list.head,0);
+    parser->parserTree.clear();
+    parser->fillTree(parser->list.head);
+    parser->parserTree.show();
+    parser->list.deleteTagsList(parser->list.head);
 }
 
 void MainWindow::on_actionShow_hide_preview_triggered()
@@ -359,5 +378,86 @@ void MainWindow::on_actionShow_hide_preview_triggered()
     {
         browser->setVisible(true);
         cda->onTextChanged();
+    }
+}
+
+//void MainWindow::onlyhtml(QString func)
+//{
+//    QMessageBox msgBox;
+//    msgBox.setIcon(QMessageBox::Warning);
+//    msgBox.setWindowTitle("Wrong extension");
+//    msgBox.setText(func+" works only on html files");
+//    msgBox.setStandardButtons(QMessageBox::Ok);
+//    msgBox.setDefaultButton(QMessageBox::Ok);
+//    int ret = msgBox.exec();
+//    switch (ret)
+//    {
+//      case QMessageBox::Ok:
+//          msgBox.close();
+//          break;
+//      default:
+//          msgBox.close();
+//          break;
+//    }
+//}
+
+//void MainWindow::autosave()
+//{
+//    while(autosaveon)
+//    {
+//        qDebug()<<"sdfsd";
+//    }
+//}
+
+void MainWindow::on_actionAutosave_toggled(bool arg1)
+{
+    if(arg1)
+    {
+        ui->actionAutosave->setChecked(true);
+        qDebug()<<"on";
+        emit stopthread(false);
+        autosave->start();
+    }
+    else
+    {
+        qDebug()<<"off";
+        ui->actionAutosave->setChecked(false);
+        if(autosave->isRunning() and currentFile!="")
+        {
+            emit stopthread(true);
+            autosave->quit();
+            autosave->wait();
+        }
+    }
+}
+
+void MainWindow::autosaveRequest()
+{
+    on_actionSave_triggered();
+}
+
+
+
+void MainWindow::on_actionWord_wrap_toggled(bool arg1)
+{
+    emit wordWrapChanged(arg1);
+}
+
+void MainWindow::fileChangedSlot(QString name){
+    on_actionAutosave_toggled(false);
+    if(name.endsWith("html"))
+    {
+        ui->actionShow_hide_preview->setEnabled(true);
+        ui->actionParsuj->setEnabled(true);
+        ui->actionAutosave->setEnabled(true);
+    }
+    else if(name.endsWith("txt")){
+        ui->actionAutosave->setEnabled(true);
+    }
+    else
+    {
+        ui->actionAutosave->setEnabled(false);
+        ui->actionShow_hide_preview->setEnabled(false);
+        ui->actionParsuj->setEnabled(false);
     }
 }

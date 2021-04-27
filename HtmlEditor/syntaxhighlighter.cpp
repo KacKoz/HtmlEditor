@@ -8,9 +8,15 @@ syntaxHighlighter::syntaxHighlighter(QPlainTextEdit* codeeditor)
     this->setDocument(codeeditor->document());
 }
 
+void syntaxHighlighter::receivecurrentfilename(QString name){
+    currentfile= name;
+}
+
 void syntaxHighlighter::highlightBlock( const QString& text)
 {
     //qDebug() << "Last line: " << previousBlockState();
+    if(!currentfile.endsWith("html"))
+        return;
 
     if(text.length() == 0)
     {

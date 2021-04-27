@@ -50,6 +50,8 @@
     </property>
     <addaction name="actionParsuj"/>
     <addaction name="actionShow_hide_preview"/>
+    <addaction name="actionAutosave"/>
+    <addaction name="actionWord_wrap"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -132,6 +134,9 @@
    </property>
   </action>
   <action name="actionOpen_directory">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Open directory</string>
    </property>
@@ -145,16 +150,44 @@
    </property>
   </action>
   <action name="actionParsuj">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Parse</string>
    </property>
   </action>
   <action name="actionShow_hide_preview">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Show/hide preview</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionAutosave">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Autosave</string>
+   </property>
+  </action>
+  <action name="actionWord_wrap">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Word wrap</string>
    </property>
   </action>
  </widget>

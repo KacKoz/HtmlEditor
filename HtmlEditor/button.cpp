@@ -69,7 +69,6 @@ void Button::makefile(){
             {
                 if (file.open(QIODevice::ReadWrite)) {
                         QTextStream stream(&file);
-                        //stream << "something" << endl;
                         file.close();
                     }
                 else
@@ -81,10 +80,19 @@ void Button::makefile(){
             infoinvalidname("file");
         }
     }
-    else
-    {
-        infofirstopen("Creating file");
-    }
+//        if(!std::regex_search(name.toStdString(),std::regex("[^\\\\/:*?<>|]+")))
+//        {
+//            infoinvalidname("file");
+//        }
+//        else
+//        {
+//            qDebug()<<"prawidlowa";
+//        }
+//    }
+//    else
+//    {
+//        infofirstopen("Creating file");
+//    }
 
 }
 

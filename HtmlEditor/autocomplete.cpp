@@ -1,11 +1,35 @@
 #include "autocomplete.h"
 #include <QDebug>
 #include <QMenu>
-
+#include <QMessageBox>
 
 
 Autocomplete::Autocomplete(){
-    this->_tags = new TagsTree("selfclosing.txt");
+    try {
+        this->_tagsselfclosing = new TagsTree("selfclosing.txt");
+        this->_tagsall = new TagsTree("tags.txt");
+    }  catch (std::exception &e) {
+        qDebug()<<e.what();
+        QMessageBox msgBox;
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.setWindowTitle("Error");
+        msgBox.setText(e.what());
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        int ret = msgBox.exec();
+        switch (ret)
+        {
+          case QMessageBox::Ok:
+              msgBox.close();
+              break;
+          default:
+              msgBox.close();
+              break;
+        }
+        exit(-1);
+    }
+    connect(this,&Autocomplete::askforrow,_tagsall,&TagsTree::getFirstStartingWith);
+    connect(_tagsall,&TagsTree::giverow,this,&Autocomplete::receiverow);
 }
 
 void Autocomplete::runautocomplete(QString editortext,QTextCursor editorcursor,QRect editorcursorpos)
@@ -33,7 +57,7 @@ void Autocomplete::runautocomplete(QString editortext,QTextCursor editorcursor,Q
         else
         {
             //qDebug()<<text[cursorpos-1];
-            if(text[cursorpos-1]==">" and tag.mid(1)!=nullptr and tag.mid(1).indexOf('/')<0 and tag.mid(1).indexOf('!')<0 and !_tags->isInTree(tag.mid(1,tag.indexOf(' ')-1)))
+            if(text[cursorpos-1]==">" and tag.mid(1)!=nullptr and tag.mid(1).indexOf('/')<0 and tag.mid(1).indexOf('!')<0 and !_tagsselfclosing->isInTree(tag.mid(1,tag.indexOf(' ')-1)))
             {
                 emit closingtag("</"+tag.mid(1,tag.indexOf(' ')-1)+">");
                 //qDebug()<<"</"+tag.mid(1)+">";
@@ -65,3 +89,10 @@ void Autocomplete::receiverow(int row)
     rowoftag=row;
 
 }
+
+Autocomplete::~Autocomplete()
+{
+    delete _tagsall;
+    delete _tagsselfclosing;
+}
+

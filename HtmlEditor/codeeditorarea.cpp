@@ -1,4 +1,5 @@
 #include "codeeditorarea.h"
+#include "mainwindow.h"
 
 CodeEditorArea::CodeEditorArea()
 {
@@ -10,6 +11,8 @@ CodeEditorArea::CodeEditorArea()
     connect(codeeditor, &CodeEditor::scrolledTo, lna, &LineNumberArea::onScrolledTo);
     connect(lna,&LineNumberArea::selectLine ,codeeditor , &CodeEditor::onSelectLine);
     connect(codeeditor,&QPlainTextEdit::textChanged, this , &CodeEditorArea::onTextChanged);
+    connect(this, &CodeEditorArea::giveCurrentFileNameMiddle, codeeditor, &CodeEditor::receivecurrentfilename);
+    connect(this, &CodeEditorArea::giveWordWrap, codeeditor, &CodeEditor::receiveWordWrap);
 
     hlayout = new QHBoxLayout;
     hlayout->addWidget(lna);
@@ -30,6 +33,16 @@ void CodeEditorArea::onTextChanged()
 {
     emit codeTextChanged();
     emit newText(this->getText());
+}
+
+void CodeEditorArea::receiveCurrentFileNameMiddle(QString name)
+{
+    emit giveCurrentFileNameMiddle(name);
+}
+
+void CodeEditorArea::receiveWordWrapMiddle(bool wordwrap)
+{
+    emit giveWordWrap(wordwrap);
 }
 
 void CodeEditorArea::setText(const QString& text)

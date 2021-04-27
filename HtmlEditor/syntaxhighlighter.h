@@ -10,8 +10,13 @@
 
 
 
-class syntaxHighlighter : QSyntaxHighlighter
+class syntaxHighlighter : public QSyntaxHighlighter
 {
+    Q_OBJECT
+
+public slots:
+    void receivecurrentfilename(QString name);
+
 public:
     syntaxHighlighter(QPlainTextEdit*);
 
@@ -67,7 +72,7 @@ private:
     } colors;
 
    // QVector<QRegularExpression> patterns;
-
+    QString currentfile=nullptr;
 
 };
 
