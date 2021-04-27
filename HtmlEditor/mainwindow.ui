@@ -52,6 +52,7 @@
     <addaction name="actionShow_hide_preview"/>
     <addaction name="actionAutosave"/>
     <addaction name="actionWord_wrap"/>
+    <addaction name="actionAdvanced_settings"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -188,6 +189,14 @@
    </property>
    <property name="text">
     <string>Word wrap</string>
+	</property>
+	</action>
+  <action name="actionAdvanced_settings">
+   <property name="text">
+    <string>Advanced settings...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
  </widget>

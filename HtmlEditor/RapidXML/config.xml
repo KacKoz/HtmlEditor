@@ -1,0 +1,10 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<config>
+	<colors>
+		<tag>#FFE700</tag>
+		<string>#EE0E0E</string>
+		<attribute>#43EE0E</attribute>
+		<comment>#747474</comment>
+		<base>#FFFFFF</base>
+	</colors>
+</config>

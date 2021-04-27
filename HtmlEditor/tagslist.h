@@ -15,7 +15,7 @@ public:
 
 
 template<typename T>
-class TagsList //: public QObject
+class TagsList                                  //: public QObject
 {
 public:
 

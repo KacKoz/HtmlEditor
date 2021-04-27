@@ -6,6 +6,7 @@
 #include <QMainWindow>
 #include "codeeditor.h"
 #include "linenumberarea.h"
+#include "Configuration.h"
 
 class CodeEditorArea : public QWidget
 {
@@ -36,6 +37,7 @@ public slots:
     void onTextChanged();
     void receiveCurrentFileNameMiddle(QString);
     void receiveWordWrapMiddle(bool);
+    void onConfigChanged(const std::shared_ptr<config>&);
 
 
 private:

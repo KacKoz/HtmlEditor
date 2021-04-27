@@ -6,6 +6,9 @@ syntaxHighlighter::syntaxHighlighter(QPlainTextEdit* codeeditor)
     : QSyntaxHighlighter(codeeditor)
 {
     this->setDocument(codeeditor->document());
+
+    this->incorrect.setFontUnderline(true);
+    this->incorrect.setUnderlineColor(Qt::red);
 }
 
 void syntaxHighlighter::receivecurrentfilename(QString name){
@@ -17,6 +20,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
     //qDebug() << "Last line: " << previousBlockState();
     if(!currentfile.endsWith("html"))
         return;
+    // dodac zmienna mowiaca czy ma kolorowac
 
     if(text.length() == 0)
     {
@@ -28,6 +32,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
     }
 
     int startIndex = -1;
+    int lastIndex = 0;
     int comment = 0;
     bool script = false;
 
@@ -41,13 +46,14 @@ void syntaxHighlighter::highlightBlock( const QString& text)
             case STRING:
             {
                 state = currentState::string;
-                startIndex = 0;
+                startIndex = 0;               
                 break;
             }
 
             case ATTRIBUTE:
             {
                 state = currentState::attribute;
+                startIndex = 0;
                 break;
             }
 
@@ -82,12 +88,37 @@ void syntaxHighlighter::highlightBlock( const QString& text)
             {
                 if(text[i] == '-' && text.length() > i+2 && text.mid(i, 3) == "-->")
                 {
-                    setFormat(startIndex, i-startIndex+3, colors.commentColor);
+                    setFormat(startIndex, i-startIndex+3, colors["comment"]);
                     state = currentState::beggining;
+                    lastIndex = i + 3;
                     startIndex = -1;
                 }
                 break;
             }
+
+            case currentState::incorrectValue:
+            {
+                if(text[i] == '>')
+                {
+
+                    setFormat(startIndex, i-1, incorrect);
+                    setFormat(i, i+1, colors["base"]);
+                    startIndex = -1;
+                    lastIndex = i;
+                    state = currentState::beggining;
+                }
+                else if(text[i].isSpace())
+                {
+
+                    setFormat(startIndex, i-1, incorrect);
+                    setFormat(i, i+1, colors["base"]);
+                    startIndex = -1;
+                    lastIndex = -1;
+                    state = currentState::attribute;
+                }
+                break;
+            }
+
 
             case currentState::attribute:
             {
@@ -96,19 +127,25 @@ void syntaxHighlighter::highlightBlock( const QString& text)
                     if(text[i].isLetter())
                         startIndex = i;
                     else if(text[i] == '>' || text[i] == '<')
+                    {
+                        lastIndex = i;
                         state = currentState::beggining;
+                    }
 
                 }
                 else if(startIndex != -1)
                 {
-                    setFormat(startIndex, i-startIndex, colors.attributeColor);
+                    setFormat(startIndex, i-startIndex, colors["attribute"]);
                     if(text[i] == '=')
                     {
+                        setFormat(i, i+1, colors["base"]);
                         startIndex = -1;
+                        lastIndex = -1;
                         state = currentState::value;
                     }
                     else if(text[i] == '>')
                     {
+                        lastIndex = i;
                         state = currentState::beggining;
                         startIndex = -1;
                     }
@@ -122,6 +159,8 @@ void syntaxHighlighter::highlightBlock( const QString& text)
                 if(text[i] == '<')
                 {
                     comment = 1;
+                    setFormat(lastIndex, i - lastIndex + 1, colors["base"]);
+                    lastIndex = -1;
                     state = currentState::tagName;
                 }
                 break;
@@ -131,26 +170,9 @@ void syntaxHighlighter::highlightBlock( const QString& text)
             {
                 if(text[i] == '"')
                 {
-                    setFormat(startIndex, i-startIndex+1, colors.stringColor);
+                    setFormat(startIndex, i-startIndex+1, colors["string"]);
                     startIndex = -1;
                     state = currentState::attribute;
-                }
-
-                break;
-            }
-
-            case currentState::number:
-            {
-                if(!text[i].isDigit())
-                {
-                    startIndex = -1;
-                    if(text[i].isSpace())
-                    {
-                        setFormat(startIndex, i-startIndex, colors.numberColor);
-                        state = currentState::attribute;
-                    }
-                    else
-                        state = currentState::beggining;
                 }
 
                 break;
@@ -163,10 +185,20 @@ void syntaxHighlighter::highlightBlock( const QString& text)
                     state = currentState::string;
                     startIndex = i;
                 }
-                else if(text[i].isDigit())
+                else if(text[i] == ">")
+                {
+                    lastIndex = i;
+                    state = currentState::beggining;
+                }
+                else if(text[i].isSpace())
+                {
+                   continue;
+                }
+                else
                 {
                     startIndex = i;
-                    state = currentState::number;
+                    state = currentState::incorrectValue;
+                    //qDebug() << "BLAD WARTOSCI";
                 }
 
                 break;
@@ -178,6 +210,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
                 {
                     if(text[i] == '/')
                     {
+                        setFormat(i, i+1, colors["base"]);
                         comment = 0;
                     }
                     else if(text[i].isLetter())
@@ -188,6 +221,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
                     else if(text[i].isSpace())
                     {
                         comment = 0;
+                        lastIndex = i;
                         state = currentState::beggining;
                     }
                     else if(text[i] == '!')
@@ -198,17 +232,21 @@ void syntaxHighlighter::highlightBlock( const QString& text)
                             {
                                 state = currentState::comment;
                                 startIndex = i-1;
+                                lastIndex = -1;
                             }
                         }
                         else
+                        {
+                            lastIndex = i;
                             state = currentState::beggining;
+                        }
                     }
                 }
                 else if(startIndex != -1)
                 {
                     if(text[i].isSpace())
                     {
-                        setFormat(startIndex, i-startIndex, colors.tagColor);
+                        setFormat(startIndex, i-startIndex, colors["tag"]);
                         startIndex = -1;
                         state = currentState::attribute;
                         if(text.mid(startIndex, i-startIndex) == "script" && text[startIndex-1] != '/')
@@ -222,8 +260,9 @@ void syntaxHighlighter::highlightBlock( const QString& text)
                     }
                     else if(text[i] == '>')
                     {
-                        setFormat(startIndex, i-startIndex, colors.tagColor);
+                        setFormat(startIndex, i-startIndex, colors["tag"]);
                         startIndex = -1;
+                        lastIndex = i;
                         state = currentState::beggining;             
                     }
 
@@ -237,6 +276,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
 
                 if(text[i] == '=')
                 {
+                    setFormat(i, i+1, colors["base"]);
                     state = currentState::value;
                 }
 
@@ -251,8 +291,15 @@ void syntaxHighlighter::highlightBlock( const QString& text)
     {
         case currentState::comment:
         {
-            setFormat(startIndex, text.length()-startIndex, colors.commentColor);
+            setFormat(startIndex, text.length()-startIndex, colors["comment"]);
             setCurrentBlockState(COMMENT);
+            break;
+        }
+
+        case currentState::incorrectValue:
+        {
+            setFormat(startIndex, text.length()-startIndex, incorrect);
+            setCurrentBlockState(ATTRIBUTE);
             break;
         }
 
@@ -264,32 +311,25 @@ void syntaxHighlighter::highlightBlock( const QString& text)
             }
             else
             {
-                setFormat(startIndex, text.length()-startIndex, colors.attributeColor);
-                setCurrentBlockState(ASSIGN);
+                setFormat(startIndex, text.length()-startIndex, colors["attribute"]);
+                setCurrentBlockState(ATTRIBUTE);
             }
             break;
         }
 
         case currentState::beggining:
         {
+            setFormat(lastIndex, text.size(), colors["base"]);
             setCurrentBlockState(NORMAL);
             break;
         }
 
         case currentState::string:
         {
-                setFormat(startIndex, text.length()-startIndex, colors.stringColor);
+                setFormat(startIndex, text.length()-startIndex, colors["string"]);
 
                 setCurrentBlockState(STRING);
 
-
-            break;
-        }
-
-        case currentState::number:
-        {
-            setFormat(startIndex, text.length()-startIndex, colors.numberColor);
-            setCurrentBlockState(ATTRIBUTE);
 
             break;
         }
@@ -307,7 +347,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
                 setCurrentBlockState(NORMAL); //ERROR
             else
             {
-                setFormat(startIndex, text.length() - startIndex, colors.tagColor);
+                setFormat(startIndex, text.length() - startIndex, colors["tag"]);
                 setCurrentBlockState(ATTRIBUTE);
             }
 
@@ -325,7 +365,19 @@ void syntaxHighlighter::highlightBlock( const QString& text)
    // qDebug()<<"Koniec bloku z " << currentBlockState();
 
 
-  }
+}
+
+void syntaxHighlighter::setConfig(const std::shared_ptr<config> &conf)
+{
+    QColor col;
+    for(const auto& i: conf->colors)
+    {
+        col.setNamedColor(i.second);
+        this->colors[i.first] = col;
+    }
+
+    rehighlight();
+}
 
 
     /*QRegularExpression re;
@@ -341,7 +393,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
 
         QRegularExpressionMatch match = it.next();
         if(it1.hasNext())
-            setFormat(match.capturedStart(), match.capturedLength(), colors.tagColor);
+            setFormat(match.capturedStart(), match.capturedLength(), colors["tag"]);
     }*/
 
 
@@ -350,7 +402,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
     tc.removeSelectedText();
 
     QTextCharFormat f = tc.charFormat();
-    //f.setForeground(this->colors.tagColor);
+    //f.setForeground(this->colors["tag"]);
 
     bool inTag = false;
     bool inWord = false;
@@ -384,7 +436,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
             {
                 inTag = false;
                 curWord.append(">");
-                f.setForeground(this->colors.tagColor);
+                f.setForeground(this->colors["tag"]);
                 tc.setCharFormat(f);
                 tc.insertText(curWord);
                 curWord="";
@@ -408,7 +460,7 @@ void syntaxHighlighter::highlightBlock( const QString& text)
             else if(inWord)
             {
                 inWord = false;
-                f.setForeground(this->colors.normalColor);
+                f.setForeground(this->colors["base"]);
                 tc.setCharFormat(f);
                 curWord.append(text[i]);
                 tc.insertText(curWord);

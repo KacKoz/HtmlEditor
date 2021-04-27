@@ -1,6 +1,8 @@
 #include "tagstree.h"
 #include <QDebug>
 
+#include <utility>
+
 
 
 TagsTree::TagsTree(const QString& fileName)
@@ -21,7 +23,6 @@ TagsTree::~TagsTree()
 
 
 void TagsTree::getFirstStartingWith(const QString& text)
-
 {
     node* cur = _head;
     int found = -1;
@@ -82,7 +83,6 @@ bool TagsTree::_readTagsFromFile(const QString& fileName)
     {
         line = in.readLine();
         line = line.simplified();
-        line.remove(' ');
         v.push_back(line);
     }
 

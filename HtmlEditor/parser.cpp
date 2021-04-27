@@ -23,6 +23,16 @@ Parser::~Parser()
 void Parser::parsuj(QString text)
 {
     list.head=nullptr;
+    try
+    {
+        _tags = new TagsTree("selfclosing.txt");
+    }
+    catch (QString s)
+    {
+        qDebug() << s;
+        return;
+    }
+
     Node<QString> *current= nullptr;//, *parent=nullptr;
     bool isLessThan = false, wasSpace=false, wasQuotation=false, wasClosing = false;
     QString tag="";

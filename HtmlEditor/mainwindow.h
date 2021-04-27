@@ -15,6 +15,7 @@
 #include "parser.h"
 #include "browserview.h"
 #include "autosave.h"
+#include "settings.h"
 
 
 
@@ -74,6 +75,7 @@ private slots:
     void on_actionWord_wrap_toggled(bool arg1);
 
     void fileChangedSlot(QString);
+    void on_actionAdvanced_settings_triggered();
 
 public slots:
     void on_actionOpen_from_tree(QString path);
@@ -104,6 +106,7 @@ private:
     bool hasChanged = false;
     bool autosaveon = false;
     BrowserView *browser;
+    Settings* settings;
     CodeEditorArea* cda;
     Autosave* autosave;
 };

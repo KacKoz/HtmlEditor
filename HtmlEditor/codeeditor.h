@@ -12,6 +12,7 @@
 #include <QPair>
 
 #include "tagstree.h"
+#include "Configuration.h"
 
 class CodeEditor : public QPlainTextEdit
 {
@@ -20,6 +21,8 @@ class CodeEditor : public QPlainTextEdit
 public:
     CodeEditor();
     QString currentfilename ="";
+    ~CodeEditor();
+    void setConfig(const std::shared_ptr<config>&);
 
 signals:
     void fontSizeChanged(int);
@@ -33,6 +36,7 @@ public slots:
     void writesuggestion(QString tag);
     void receivecurrentfilename(QString name);
     void receiveWordWrap(bool);
+
 
 private slots:
     void onBlockCountChange(int count);

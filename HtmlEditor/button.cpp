@@ -29,8 +29,7 @@ void Button::makedir(){
 //        }
         if(std::regex_match(name.toStdString(),std::regex("[^\\\\/:*?<>|\"]+")))
         {
-            QDir dir(currentdir+"/"+name);
-            //qDebug()<<currentdir+"/"+name;
+            QDir dir(currentdir+"/"+name);            
             if (!dir.exists())
                 dir.mkpath(currentdir+"/"+name);
         }
@@ -64,7 +63,6 @@ void Button::makefile(){
         if(std::regex_match(name.toStdString(),std::regex("[^\\\\/:*?<>|]+\\.(txt|html)")))
         {
             QFile file(currentdir+"/"+name);
-            //qDebug()<<currentdir+"/"+name;
             if (!file.exists())
             {
                 if (file.open(QIODevice::ReadWrite)) {

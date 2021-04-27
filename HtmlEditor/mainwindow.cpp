@@ -37,7 +37,9 @@ MainWindow::MainWindow(QWidget *parent)
     parser = new Parser();
     browser = new BrowserView();
     autosave = new Autosave();
+    settings = new Settings();
 
+    connect(settings, &Settings::configChanged, cda, &CodeEditorArea::onConfigChanged);
     connect(cda, &CodeEditorArea::codeTextChanged, this, &MainWindow::on_plainTextEdit_textChanged);
     connect(this, &MainWindow::filechanged, dirtree, &DirTree::changefileDirectory);
     connect(this, &MainWindow::directorychanged, dirtree, &DirTree::changeDirectory);
@@ -85,6 +87,8 @@ MainWindow::MainWindow(QWidget *parent)
     this->setCentralWidget(window);
     setWindowTitle("Untitled");
 
+    settings->emitSettings();
+    //QDesktopServices::openUrl(QUrl::fromLocalFile("Stronka/index.html"));
 }
 
 MainWindow::~MainWindow()
@@ -381,34 +385,6 @@ void MainWindow::on_actionShow_hide_preview_triggered()
     }
 }
 
-//void MainWindow::onlyhtml(QString func)
-//{
-//    QMessageBox msgBox;
-//    msgBox.setIcon(QMessageBox::Warning);
-//    msgBox.setWindowTitle("Wrong extension");
-//    msgBox.setText(func+" works only on html files");
-//    msgBox.setStandardButtons(QMessageBox::Ok);
-//    msgBox.setDefaultButton(QMessageBox::Ok);
-//    int ret = msgBox.exec();
-//    switch (ret)
-//    {
-//      case QMessageBox::Ok:
-//          msgBox.close();
-//          break;
-//      default:
-//          msgBox.close();
-//          break;
-//    }
-//}
-
-//void MainWindow::autosave()
-//{
-//    while(autosaveon)
-//    {
-//        qDebug()<<"sdfsd";
-//    }
-//}
-
 void MainWindow::on_actionAutosave_toggled(bool arg1)
 {
     if(arg1)
@@ -443,7 +419,8 @@ void MainWindow::on_actionWord_wrap_toggled(bool arg1)
     emit wordWrapChanged(arg1);
 }
 
-void MainWindow::fileChangedSlot(QString name){
+void MainWindow::fileChangedSlot(QString name)
+{
     on_actionAutosave_toggled(false);
     if(name.endsWith("html"))
     {
@@ -460,4 +437,9 @@ void MainWindow::fileChangedSlot(QString name){
         ui->actionShow_hide_preview->setEnabled(false);
         ui->actionParsuj->setEnabled(false);
     }
+}
+
+void MainWindow::on_actionAdvanced_settings_triggered()
+{
+    settings->show();
 }
