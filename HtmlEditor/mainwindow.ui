@@ -50,6 +50,7 @@
     </property>
     <addaction name="actionParsuj"/>
     <addaction name="actionShow_hide_preview"/>
+    <addaction name="actionAdvanced_settings"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -155,6 +156,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionAdvanced_settings">
+   <property name="text">
+    <string>Advanced settings...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
  </widget>

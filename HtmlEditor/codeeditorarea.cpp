@@ -67,3 +67,9 @@ void CodeEditorArea::Undo()
 {
     codeeditor->undo();
 }
+
+void CodeEditorArea::onConfigChanged(const std::shared_ptr<config>& conf)
+{
+    qDebug() << "Received settings";
+    this->codeeditor->setConfig(conf);
+}

@@ -28,7 +28,9 @@ CodeEditor::CodeEditor()
     pal.setColor(QPalette::Base, QRgb(0x5a5a5a));
     //this->setAutoFillBackground(true);
     this->setPalette(pal);
-    this->setLineWrapMode(LineWrapMode::NoWrap);
+    this->setLineWrapMode(QPlainTextEdit::LineWrapMode::WidgetWidth);
+    //this->setWordWrapMode(QTextOption::WrapMode::WordWrap);
+
 
     connect(this, &QPlainTextEdit::blockCountChanged, this, &CodeEditor::onBlockCountChange);
     connect(this, &QPlainTextEdit::updateRequest, this, &CodeEditor::onUpdateRequest);
@@ -59,10 +61,9 @@ CodeEditor::~CodeEditor()
 
 void CodeEditor::wheelEvent(QWheelEvent *event)
 {
+    //this->verticalScrollBar()->setValue(this->verticalScrollBar()->value() - (event->angleDelta().y()/25));
 
-    this->verticalScrollBar()->setValue(this->verticalScrollBar()->value() - (event->angleDelta().y()/25));
-    emit scrolledTo(this->verticalScrollBar()->value());
-
+    QPlainTextEdit::wheelEvent(event);
     if(GetAsyncKeyState(VK_LCONTROL) & 0x81)
     {
         QFont f = this->font();
@@ -75,6 +76,10 @@ void CodeEditor::wheelEvent(QWheelEvent *event)
         }
         this->setFont(f);
         emit blockCountChanged(_linesInBlock.size());
+    }
+    else
+    {
+        emit scrolledTo(this->verticalScrollBar()->value());
     }
 
 }
@@ -205,6 +210,11 @@ void CodeEditor::writesuggestion(QString tag)
     this->blockSignals(false);
     taghints->setVisible(false);
     autocomplete->runautocomplete(this->toPlainText(),this->textCursor(),this->cursorRect());
+}
+
+void CodeEditor::setConfig(const std::shared_ptr<config> &conf)
+{
+    this->sh->setConfig(conf);
 }
 
 void CodeEditor::mousePressEvent(QMouseEvent *e)

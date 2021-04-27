@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 #include "codeeditor.h"
 #include "linenumberarea.h"
+#include "Configuration.h"
 
 class CodeEditorArea : public QWidget
 {
@@ -31,6 +32,7 @@ signals:
 public slots:
 
     void onTextChanged();
+    void onConfigChanged(const std::shared_ptr<config>&);
 
 
 private:

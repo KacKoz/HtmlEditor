@@ -36,6 +36,9 @@ MainWindow::MainWindow(QWidget *parent)
     parser = new Parser();
     browser = new BrowserView();
 
+    settings = new Settings();
+
+    connect(settings, &Settings::configChanged, cda, &CodeEditorArea::onConfigChanged);
 
     connect(cda, &CodeEditorArea::codeTextChanged, this, &MainWindow::on_plainTextEdit_textChanged);
     connect(this, &MainWindow::filechanged, dirtree, &DirTree::changefileDirectory);
@@ -84,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-
+    settings->emitSettings();
     //QDesktopServices::openUrl(QUrl::fromLocalFile("Stronka/index.html"));
 }
 
@@ -360,4 +363,9 @@ void MainWindow::on_actionShow_hide_preview_triggered()
         browser->setVisible(true);
         cda->onTextChanged();
     }
+}
+
+void MainWindow::on_actionAdvanced_settings_triggered()
+{
+    settings->show();
 }
