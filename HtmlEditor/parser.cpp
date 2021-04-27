@@ -10,13 +10,29 @@ Parser::Parser()
     parserTree.setBaseSize(300,300);
     parserTree.setWindowTitle("DOM Tree");
     parserTree.setHeaderHidden(true);
+    _tags = new TagsTree("selfclosing.txt");
+}
 
+Parser::~Parser()
+{
+    //parserTree.close();
+    delete _tags;
+    delete _currentTreeItem;
 }
 
 void Parser::parsuj(QString text)
 {
     list.head=nullptr;
-    _tags = new TagsTree("selfclosing.txt");
+    try
+    {
+        _tags = new TagsTree("selfclosing.txt");
+    }
+    catch (QString s)
+    {
+        qDebug() << s;
+        return;
+    }
+
     Node<QString> *current= nullptr;//, *parent=nullptr;
     bool isLessThan = false, wasSpace=false, wasQuotation=false, wasClosing = false;
     QString tag="";
@@ -53,9 +69,8 @@ void Parser::parsuj(QString text)
                     current = current->parent;
                 else
                 {
-//                    qDebug()<<"Koniec";
-//                    break;
-                    throw 0;
+
+                    lackoftag("Opening");
                 }
             }
             else
@@ -118,7 +133,7 @@ void Parser::parsuj(QString text)
         }
     }
     if(current)
-        throw 1;
+        lackoftag("Closing");
         //qDebug()<<"Zly kod";
     //list.print(list.head);
     //qDebug()<<"/////////////////////////";

@@ -1,20 +1,16 @@
 #include "tagstree.h"
 #include <QDebug>
 
+#include <utility>
+
 
 
 TagsTree::TagsTree(const QString& fileName)
 {
     if(!this->_readTagsFromFile(fileName))
     {
-        qDebug() << "Coudl not find: " << fileName;
-
+        throw std::runtime_error("Could not find: " + fileName.toStdString());
     }
-    else
-    {
-        qDebug() << "Succesfully read tags from: " << fileName;
-    }
-
     _returnNodes(_head);
     //qDebug()<<taglist;
 
@@ -27,7 +23,6 @@ TagsTree::~TagsTree()
 
 
 void TagsTree::getFirstStartingWith(const QString& text)
-
 {
     node* cur = _head;
     int found = -1;
@@ -88,7 +83,6 @@ bool TagsTree::_readTagsFromFile(const QString& fileName)
     {
         line = in.readLine();
         line = line.simplified();
-        line.remove(' ');
         v.push_back(line);
     }
 

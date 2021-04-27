@@ -15,7 +15,7 @@ public:
 
 
 template<typename T>
-class TagsList //: public QObject
+class TagsList                                  //: public QObject
 {
 public:
 
@@ -28,6 +28,7 @@ public:
 
 //private:
     TagsList(){head=nullptr;}
+    ~TagsList(){}
     Node<T>* head;
     void print(Node<T>* node, int x)
     {
@@ -45,6 +46,8 @@ public:
     {
         if(!node)
             return;
+        //qDebug()<<"lalalala";
+        //qDebug()<<node->data;
         deleteTagsList(node->child);
         deleteTagsList(node->sibling);
         //qDebug()<<node->data;

@@ -54,20 +54,23 @@ DirTree::DirTree()
 }
 
 void DirTree::changefileDirectory(QString name){
-    QString sPath = name;
-    while(sPath[sPath.length()-1]!='/')
+    if(name!="")
     {
+        QString sPath = name;
+        while(sPath[sPath.length()-1]!='/')
+        {
+            sPath.remove(sPath.length()-1,1);
+        }
         sPath.remove(sPath.length()-1,1);
+        model->setNameFilters(QStringList() << "*.txt"<< "*.html");
+        model->setFilter(QDir::Files | QDir::AllDirs | QDir::NoDotAndDotDot);
+        model->setNameFilterDisables(false);
+        model->setRootPath("C://");
+        this->setModel(model);
+        this->setRootIndex(model->index(sPath));
+        currentdir=sPath;
+        //qDebug()<<sPath;
     }
-    sPath.remove(sPath.length()-1,1);
-    model->setNameFilters(QStringList() << "*.txt"<< "*.html");
-    model->setFilter(QDir::Files | QDir::AllDirs | QDir::NoDotAndDotDot);
-    model->setNameFilterDisables(false);
-    model->setRootPath("C://");
-    this->setModel(model);
-    this->setRootIndex(model->index(sPath));
-    currentdir=sPath;
-    //qDebug()<<sPath;
 }
 
 void DirTree::changeDirectory(QString name){

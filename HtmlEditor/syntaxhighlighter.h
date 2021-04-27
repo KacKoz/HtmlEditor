@@ -6,17 +6,24 @@
 #include <QSyntaxHighlighter>
 #include <QPlainTextEdit>
 #include <QVector>
+#include <map>
+
+#include "Configuration.h"
 
 
 
-
-class syntaxHighlighter : QSyntaxHighlighter
+class syntaxHighlighter : public QSyntaxHighlighter
 {
+    Q_OBJECT
+
+public slots:
+    void receivecurrentfilename(QString name);
+
 public:
     syntaxHighlighter(QPlainTextEdit*);
 
     void highlightBlock( const QString&);
-
+    void setConfig(const std::shared_ptr<config>& conf);
 
 
 
@@ -40,8 +47,8 @@ private:
         assign,
         string,
         tagName,
-        number,
-        comment
+        comment,
+        incorrectValue
     };
 
    /* enum pttrn_idx
@@ -56,7 +63,7 @@ private:
 
 
 
-    struct
+   /* struct
     {
       QColor tagColor = Qt::yellow;
       QColor stringColor = Qt::red;
@@ -64,10 +71,14 @@ private:
       QColor normalColor = Qt::white;
       QColor numberColor =  Qt::cyan;
       QColor commentColor =  Qt::gray;
-    } colors;
+      QTextCharFormat incorrect;
+    } colors;*/
+
+    std::map<QString, QColor> colors;
+    QTextCharFormat incorrect;
 
    // QVector<QRegularExpression> patterns;
-
+    QString currentfile=nullptr;
 
 };
 

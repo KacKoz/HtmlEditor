@@ -3,8 +3,10 @@
 
 #include <QWidget>
 #include <QHBoxLayout>
+#include <QMainWindow>
 #include "codeeditor.h"
 #include "linenumberarea.h"
+#include "Configuration.h"
 
 class CodeEditorArea : public QWidget
 {
@@ -27,10 +29,15 @@ signals:
 
     void codeTextChanged();
     void newText(const QString& s);
+    void giveCurrentFileNameMiddle(QString);
+    void giveWordWrap(bool);
 
 public slots:
 
     void onTextChanged();
+    void receiveCurrentFileNameMiddle(QString);
+    void receiveWordWrapMiddle(bool);
+    void onConfigChanged(const std::shared_ptr<config>&);
 
 
 private:
@@ -40,6 +47,7 @@ private:
     QHBoxLayout* hlayout;
     CodeEditor* codeeditor;
     LineNumberArea* lna;
+    QMainWindow* parent;
 };
 
 #endif // CODEEDITORAREA_H

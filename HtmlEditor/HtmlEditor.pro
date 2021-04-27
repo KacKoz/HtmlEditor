@@ -2,7 +2,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++14
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -10,8 +10,10 @@ CONFIG += c++11
 
 SOURCES += \
     autocomplete.cpp \
+    autosave.cpp \
     browserview.cpp \
     button.cpp \
+    choosecolorbutton.cpp \
     codeeditor.cpp \
     codeeditorarea.cpp \
     dirtree.cpp \
@@ -19,26 +21,36 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     parser.cpp \
+    settings.cpp \
     syntaxhighlighter.cpp \
+    tabpagecolors.cpp \
     tagslist.cpp \
     tagstree.cpp \
-    tagsuggestion.cpp
+    tagsuggestion.cpp \
+    xmlreader.cpp
  
 
 HEADERS += \
+    Configuration.h \
+    TabPageWidget.h \
     autocomplete.h \
+    autosave.h \
     browserview.h \
     button.h \
+    choosecolorbutton.h \
     codeeditor.h \
     codeeditorarea.h \
     dirtree.h \
     linenumberarea.h \
     mainwindow.h \
     parser.h \
+    settings.h \
     syntaxhighlighter.h \
+    tabpagecolors.h \
     tagslist.h \
     tagstree.h \
-    tagsuggestion.h
+    tagsuggestion.h \
+    xmlreader.h
 
 
 FORMS += \

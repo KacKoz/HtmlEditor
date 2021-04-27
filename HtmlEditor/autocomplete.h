@@ -15,6 +15,7 @@ public:
     void runautocomplete(QString editortext,QTextCursor editorcursor,QRect editorcursorpos);
 
     Autocomplete();
+    ~Autocomplete();
 signals:
     void closingtag(QString closingtag);
     void sendcursorpos(QRect point,int tagrow);
@@ -33,7 +34,8 @@ private:
     QString tag= "";
 
     int rowoftag;
-    TagsTree* _tags;
+    TagsTree* _tagsselfclosing;
+    TagsTree* _tagsall;
 
 
 };

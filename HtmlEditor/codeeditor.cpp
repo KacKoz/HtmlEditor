@@ -17,18 +17,17 @@ class syntaxHighlighter;
 CodeEditor::CodeEditor()
 {
     autocomplete = new Autocomplete();
-
-    this->_tags = new TagsTree("tags.txt");
-    taghints = new Tagsuggestion(this,_tags->taglist);
-
     sh = new syntaxHighlighter(this);
+    taghints = new Tagsuggestion(this);
 
     QPalette pal;
     pal.setColor(QPalette::Text, Qt::white);
     pal.setColor(QPalette::Base, QRgb(0x5a5a5a));
     //this->setAutoFillBackground(true);
     this->setPalette(pal);
-    this->setLineWrapMode(LineWrapMode::NoWrap);
+    //this->setLineWrapMode(LineWrapMode::NoWrap);
+    //this->setWordWrapMode(QTextOption::WordWrap);
+    this->setLineWrapMode(LineWrapMode::WidgetWidth);
 
     connect(this, &QPlainTextEdit::blockCountChanged, this, &CodeEditor::onBlockCountChange);
     connect(this, &QPlainTextEdit::updateRequest, this, &CodeEditor::onUpdateRequest);
@@ -40,9 +39,9 @@ CodeEditor::CodeEditor()
 
     connect(autocomplete, &Autocomplete::showlist,taghints,&Tagsuggestion::showlist);
     connect(this,&CodeEditor::sizechanged,taghints,&Tagsuggestion::parentchangedsize);
-    connect(autocomplete,&Autocomplete::askforrow,_tags,&TagsTree::getFirstStartingWith);
-    connect(_tags,&TagsTree::giverow,autocomplete,&Autocomplete::receiverow);
     connect(taghints,&Tagsuggestion::sendsuggestion,this,&CodeEditor::writesuggestion);
+    connect(this, &CodeEditor::giveFileNameToSH, sh, &syntaxHighlighter::receivecurrentfilename);
+
 
 
     this->_linesInBlock.push_back(1);
@@ -52,17 +51,19 @@ CodeEditor::CodeEditor()
 
 }
 
+//destruktor
 CodeEditor::~CodeEditor()
 {
-    delete _tags;
+    delete sh;
+    delete taghints;
+    delete autocomplete;
 }
 
 void CodeEditor::wheelEvent(QWheelEvent *event)
 {
+    //this->verticalScrollBar()->setValue(this->verticalScrollBar()->value() - (event->angleDelta().y()/25));
 
-    this->verticalScrollBar()->setValue(this->verticalScrollBar()->value() - (event->angleDelta().y()/25));
-    emit scrolledTo(this->verticalScrollBar()->value());
-
+    QPlainTextEdit::wheelEvent(event);
     if(GetAsyncKeyState(VK_LCONTROL) & 0x81)
     {
         QFont f = this->font();
@@ -75,6 +76,10 @@ void CodeEditor::wheelEvent(QWheelEvent *event)
         }
         this->setFont(f);
         emit blockCountChanged(_linesInBlock.size());
+    }
+    else
+    {
+        emit scrolledTo(this->verticalScrollBar()->value());
     }
 
 }
@@ -102,6 +107,7 @@ void CodeEditor::onUpdateRequest()
 
 void CodeEditor::onCursorMoved()
 {
+    emit scrolledTo(this->verticalScrollBar()->value());
     emit blockCountChanged(_linesInBlock.size());
     highlightCurrentLine();
 }
@@ -150,8 +156,8 @@ void CodeEditor::setTextCursorPosition(QTextCursor& tc, int blockNumber)
 {
     int curBlockNum = tc.blockNumber();
     tc.movePosition(blockNumber > curBlockNum ?
-                    QTextCursor::NextBlock : QTextCursor::PreviousBlock,
-                    QTextCursor::MoveAnchor, abs(curBlockNum - blockNumber));
+    QTextCursor::NextBlock : QTextCursor::PreviousBlock,
+    QTextCursor::MoveAnchor, abs(curBlockNum - blockNumber));
 }
 
 void CodeEditor::insertclosingtag(QString closingtag)
@@ -168,12 +174,16 @@ void CodeEditor::insertclosingtag(QString closingtag)
 
 void CodeEditor::ontextchanged()
 {
-    autocomplete->runautocomplete(this->toPlainText(),this->textCursor(),this->cursorRect());
+    if(currentfilename.endsWith("html"))
+    {
+        autocomplete->runautocomplete(this->toPlainText(),this->textCursor(),this->cursorRect());
+    }
 }
 
 void CodeEditor::resizeEvent(QResizeEvent *event)
 {
     emit sizechanged(this->viewport());
+    QPlainTextEdit::resizeEvent(event);
 }
 
 void CodeEditor::keyPressEvent(QKeyEvent *event)
@@ -207,10 +217,27 @@ void CodeEditor::writesuggestion(QString tag)
     autocomplete->runautocomplete(this->toPlainText(),this->textCursor(),this->cursorRect());
 }
 
+void CodeEditor::setConfig(const std::shared_ptr<config> &conf)
+{
+    this->sh->setConfig(conf);
+}
+
 void CodeEditor::mousePressEvent(QMouseEvent *e)
 {
     taghints->setVisible(false);
     QPlainTextEdit::mousePressEvent(e);
 }
 
+void CodeEditor::receivecurrentfilename(QString name)
+{
+    currentfilename = name;
+    emit giveFileNameToSH(name);
+}
 
+void CodeEditor::receiveWordWrap(bool wordwrap)
+{
+    if(wordwrap)
+        this->setLineWrapMode(LineWrapMode::WidgetWidth);
+    else
+        this->setLineWrapMode(LineWrapMode::NoWrap);
+}

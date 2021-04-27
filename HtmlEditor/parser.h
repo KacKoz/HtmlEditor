@@ -11,9 +11,10 @@ class Parser
 {
 
 public:
+    Parser();
+    ~Parser();
     void parsuj(QString text);
     void lackoftag(QString whichTag);
-    Parser();
     void fillTree(Node<QString>* node);
     QTreeWidget parserTree;
     TagsList<QString> list;

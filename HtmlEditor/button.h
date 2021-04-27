@@ -24,7 +24,7 @@ private:
     void infofirstopen(QString fileordir);
     void infoinvalidname(QString fileordir);
     QString currentdir="";
-    char forbiddennames[9] = {'/','\\','"','?',':','*','|','<','>'};
+    //char forbiddennames[9] = {'/','\\','"','?',':','*','|','<','>'};
 
 };
 

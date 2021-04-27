@@ -3,6 +3,7 @@
 
 #include <QPlainTextEdit>
 #include <QListWidget>
+#include "tagstree.h"
 
 class Tagsuggestion : public QListWidget
 {
@@ -10,7 +11,8 @@ class Tagsuggestion : public QListWidget
 
 public:
 
-    Tagsuggestion(QPlainTextEdit* parent,QStringList taglist);
+    Tagsuggestion(QPlainTextEdit* parent);
+    ~Tagsuggestion();
     void keyPressEvent(QKeyEvent *event);
 public slots:
     void movelist(QRect point,int tagrow);
@@ -29,6 +31,7 @@ private:
     QPlainTextEdit* parent;
     QStringList taglist;
     int selectedrow=-1;
+    TagsTree* _tags = nullptr;
 
 };
 

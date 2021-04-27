@@ -14,6 +14,9 @@
 #include "codeeditorarea.h"
 #include "parser.h"
 #include "browserview.h"
+#include "autosave.h"
+#include "settings.h"
+
 
 
 QT_BEGIN_NAMESPACE
@@ -32,7 +35,8 @@ protected:
     void resizeEvent(QResizeEvent *event);
     void closeEvent(QCloseEvent *event);
     int saveInfo();
-
+    void onlyhtml(QString func);
+    //void autosave();
 
 private slots:
 
@@ -66,16 +70,25 @@ private slots:
 
     void on_actionShow_hide_preview_triggered();
 
+    void on_actionAutosave_toggled(bool arg1);
+
+    void on_actionWord_wrap_toggled(bool arg1);
+
+    void fileChangedSlot(QString);
+    void on_actionAdvanced_settings_triggered();
+
 public slots:
     void on_actionOpen_from_tree(QString path);
     void givecurrentfilename();
+    void autosaveRequest();
     //void on_treeView_doubleClicked(const QModelIndex &index);
 
 signals:
     void filechanged(QString);
     void directorychanged(QString);
     void currentfilename(QString);
-
+    void stopthread(bool);
+    void wordWrapChanged(bool);
 
 private:
     QString currentFile="";
@@ -91,8 +104,10 @@ private:
     QWidget *dirmenu;
     Parser *parser;
     bool hasChanged = false;
+    bool autosaveon = false;
     BrowserView *browser;
-
+    Settings* settings;
     CodeEditorArea* cda;
+    Autosave* autosave;
 };
 #endif // MAINWINDOW_H
