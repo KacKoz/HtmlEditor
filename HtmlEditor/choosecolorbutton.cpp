@@ -33,7 +33,7 @@ void ChooseColorButton::onClick()
     QColor col;
     col.setNamedColor(this->text());
     col = QColorDialog::getColor(col);
-
-    this->setColor(col.name());
+    if(col.isValid())
+        this->setColor(col.name());
 
 }

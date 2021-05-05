@@ -79,6 +79,7 @@ private:
 
    // QVector<QRegularExpression> patterns;
     QString currentfile=nullptr;
+    bool shouldColor = true;
 
 };
 

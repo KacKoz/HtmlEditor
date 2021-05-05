@@ -11,14 +11,18 @@ syntaxHighlighter::syntaxHighlighter(QPlainTextEdit* codeeditor)
     this->incorrect.setUnderlineColor(Qt::red);
 }
 
-void syntaxHighlighter::receivecurrentfilename(QString name){
-    currentfile= name;
+void syntaxHighlighter::receivecurrentfilename(QString name)
+{
+    if(name == "Untilted" || name == "*Untilted" || name.endsWith(".html"))
+        shouldColor = true;
+    else
+        shouldColor = false;
 }
 
 void syntaxHighlighter::highlightBlock( const QString& text)
 {
     //qDebug() << "Last line: " << previousBlockState();
-    if(!currentfile.endsWith("html"))
+    if(!shouldColor)
         return;
     // dodac zmienna mowiaca czy ma kolorowac
 
