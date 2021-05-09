@@ -2,6 +2,7 @@
 #include "xmlreader.h"
 
 #include <QDebug>
+#include <iostream>
 
 
 
@@ -49,7 +50,7 @@ Settings::Settings(QWidget *parent) : QWidget(parent)
     }
 
     setConfigToPages();
-
+    std::cout << "Wskaznik przed: " << conf.get();
 }
 
 void Settings::initPages()
@@ -92,15 +93,21 @@ void Settings::closeEvent(QCloseEvent *event)
 
 Settings::~Settings()
 {
-    delete tab;
+    XMLReader::saveConfigToFile("config.xml", conf);
+
     delete layout;
     delete apply;
     delete cancel;
-    delete buttonsArea;
-    delete btnsLayout;
+
 
     for(auto i: pages)
     {
+
         delete i;
     }
+
+    delete tab;
+    delete btnsLayout;
+    delete buttonsArea;
+
 }

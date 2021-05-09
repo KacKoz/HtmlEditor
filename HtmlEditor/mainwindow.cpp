@@ -93,6 +93,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    delete settings;
     delete ui;
     delete dirtree;
     delete btndir;

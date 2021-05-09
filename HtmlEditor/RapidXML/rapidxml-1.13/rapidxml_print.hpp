@@ -102,6 +102,225 @@ namespace rapidxml
         ///////////////////////////////////////////////////////////////////////////
         // Internal printing operations
     
+        // Print data node
+        template<class OutIt, class Ch>
+        inline OutIt print_data_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
+        {
+            assert(node->type() == node_data);
+            if (!(flags & print_no_indenting))
+                out = fill_chars(out, indent, Ch('\t'));
+            out = copy_and_expand_chars(node->value(), node->value() + node->value_size(), Ch(0), out);
+            return out;
+        }
+
+        // Print data node
+        template<class OutIt, class Ch>
+        inline OutIt print_cdata_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
+        {
+            assert(node->type() == node_cdata);
+            if (!(flags & print_no_indenting))
+                out = fill_chars(out, indent, Ch('\t'));
+            *out = Ch('<'); ++out;
+            *out = Ch('!'); ++out;
+            *out = Ch('['); ++out;
+            *out = Ch('C'); ++out;
+            *out = Ch('D'); ++out;
+            *out = Ch('A'); ++out;
+            *out = Ch('T'); ++out;
+            *out = Ch('A'); ++out;
+            *out = Ch('['); ++out;
+            out = copy_chars(node->value(), node->value() + node->value_size(), out);
+            *out = Ch(']'); ++out;
+            *out = Ch(']'); ++out;
+            *out = Ch('>'); ++out;
+            return out;
+        }
+
+        // Print attributes of the node
+        template<class OutIt, class Ch>
+        inline OutIt print_attributes(OutIt out, const xml_node<Ch> *node, int flags)
+        {
+            for (xml_attribute<Ch> *attribute = node->first_attribute(); attribute; attribute = attribute->next_attribute())
+            {
+                if (attribute->name() && attribute->value())
+                {
+                    // Print attribute name
+                    *out = Ch(' '), ++out;
+                    out = copy_chars(attribute->name(), attribute->name() + attribute->name_size(), out);
+                    *out = Ch('='), ++out;
+                    // Print attribute value using appropriate quote type
+                    if (find_char<Ch, Ch('"')>(attribute->value(), attribute->value() + attribute->value_size()))
+                    {
+                        *out = Ch('\''), ++out;
+                        out = copy_and_expand_chars(attribute->value(), attribute->value() + attribute->value_size(), Ch('"'), out);
+                        *out = Ch('\''), ++out;
+                    }
+                    else
+                    {
+                        *out = Ch('"'), ++out;
+                        out = copy_and_expand_chars(attribute->value(), attribute->value() + attribute->value_size(), Ch('\''), out);
+                        *out = Ch('"'), ++out;
+                    }
+                }
+            }
+            return out;
+        }
+
+        template<class OutIt, class Ch>
+        inline OutIt print_node(OutIt out, const xml_node<Ch> *node, int flags, int indent);
+
+
+
+        // Print children of the node
+        template<class OutIt, class Ch>
+        inline OutIt print_children(OutIt out, const xml_node<Ch> *node, int flags, int indent)
+        {
+            for (xml_node<Ch> *child = node->first_node(); child; child = child->next_sibling())
+                out = print_node(out, child, flags, indent);
+            return out;
+        }
+
+        // Print element node
+        template<class OutIt, class Ch>
+        inline OutIt print_element_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
+        {
+            assert(node->type() == node_element);
+
+            // Print element name and attributes, if any
+            if (!(flags & print_no_indenting))
+                out = fill_chars(out, indent, Ch('\t'));
+            *out = Ch('<'), ++out;
+            out = copy_chars(node->name(), node->name() + node->name_size(), out);
+            out = print_attributes(out, node, flags);
+
+            // If node is childless
+            if (node->value_size() == 0 && !node->first_node())
+            {
+                // Print childless node tag ending
+                *out = Ch('/'), ++out;
+                *out = Ch('>'), ++out;
+            }
+            else
+            {
+                // Print normal node tag ending
+                *out = Ch('>'), ++out;
+
+                // Test if node contains a single data node only (and no other nodes)
+                xml_node<Ch> *child = node->first_node();
+                if (!child)
+                {
+                    // If node has no children, only print its value without indenting
+                    out = copy_and_expand_chars(node->value(), node->value() + node->value_size(), Ch(0), out);
+                }
+                else if (child->next_sibling() == 0 && child->type() == node_data)
+                {
+                    // If node has a sole data child, only print its value without indenting
+                    out = copy_and_expand_chars(child->value(), child->value() + child->value_size(), Ch(0), out);
+                }
+                else
+                {
+                    // Print all children with full indenting
+                    if (!(flags & print_no_indenting))
+                        *out = Ch('\n'), ++out;
+                    out = print_children(out, node, flags, indent + 1);
+                    if (!(flags & print_no_indenting))
+                        out = fill_chars(out, indent, Ch('\t'));
+                }
+
+                // Print node end
+                *out = Ch('<'), ++out;
+                *out = Ch('/'), ++out;
+                out = copy_chars(node->name(), node->name() + node->name_size(), out);
+                *out = Ch('>'), ++out;
+            }
+            return out;
+        }
+
+
+
+        // Print declaration node
+        template<class OutIt, class Ch>
+        inline OutIt print_declaration_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
+        {
+            // Print declaration start
+            if (!(flags & print_no_indenting))
+                out = fill_chars(out, indent, Ch('\t'));
+            *out = Ch('<'), ++out;
+            *out = Ch('?'), ++out;
+            *out = Ch('x'), ++out;
+            *out = Ch('m'), ++out;
+            *out = Ch('l'), ++out;
+
+            // Print attributes
+            out = print_attributes(out, node, flags);
+
+            // Print declaration end
+            *out = Ch('?'), ++out;
+            *out = Ch('>'), ++out;
+
+            return out;
+        }
+
+        // Print comment node
+        template<class OutIt, class Ch>
+        inline OutIt print_comment_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
+        {
+            assert(node->type() == node_comment);
+            if (!(flags & print_no_indenting))
+                out = fill_chars(out, indent, Ch('\t'));
+            *out = Ch('<'), ++out;
+            *out = Ch('!'), ++out;
+            *out = Ch('-'), ++out;
+            *out = Ch('-'), ++out;
+            out = copy_chars(node->value(), node->value() + node->value_size(), out);
+            *out = Ch('-'), ++out;
+            *out = Ch('-'), ++out;
+            *out = Ch('>'), ++out;
+            return out;
+        }
+
+        // Print doctype node
+        template<class OutIt, class Ch>
+        inline OutIt print_doctype_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
+        {
+            assert(node->type() == node_doctype);
+            if (!(flags & print_no_indenting))
+                out = fill_chars(out, indent, Ch('\t'));
+            *out = Ch('<'), ++out;
+            *out = Ch('!'), ++out;
+            *out = Ch('D'), ++out;
+            *out = Ch('O'), ++out;
+            *out = Ch('C'), ++out;
+            *out = Ch('T'), ++out;
+            *out = Ch('Y'), ++out;
+            *out = Ch('P'), ++out;
+            *out = Ch('E'), ++out;
+            *out = Ch(' '), ++out;
+            out = copy_chars(node->value(), node->value() + node->value_size(), out);
+            *out = Ch('>'), ++out;
+            return out;
+        }
+
+        // Print pi node
+        template<class OutIt, class Ch>
+        inline OutIt print_pi_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
+        {
+            assert(node->type() == node_pi);
+            if (!(flags & print_no_indenting))
+                out = fill_chars(out, indent, Ch('\t'));
+            *out = Ch('<'), ++out;
+            *out = Ch('?'), ++out;
+            out = copy_chars(node->name(), node->name() + node->name_size(), out);
+            *out = Ch(' '), ++out;
+            out = copy_chars(node->value(), node->value() + node->value_size(), out);
+            *out = Ch('?'), ++out;
+            *out = Ch('>'), ++out;
+            return out;
+        }
+
+
+
+
         // Print node
         template<class OutIt, class Ch>
         inline OutIt print_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
@@ -164,214 +383,11 @@ namespace rapidxml
             return out;
         }
         
-        // Print children of the node                               
-        template<class OutIt, class Ch>
-        inline OutIt print_children(OutIt out, const xml_node<Ch> *node, int flags, int indent)
-        {
-            for (xml_node<Ch> *child = node->first_node(); child; child = child->next_sibling())
-                out = print_node(out, child, flags, indent);
-            return out;
-        }
 
-        // Print attributes of the node
-        template<class OutIt, class Ch>
-        inline OutIt print_attributes(OutIt out, const xml_node<Ch> *node, int flags)
-        {
-            for (xml_attribute<Ch> *attribute = node->first_attribute(); attribute; attribute = attribute->next_attribute())
-            {
-                if (attribute->name() && attribute->value())
-                {
-                    // Print attribute name
-                    *out = Ch(' '), ++out;
-                    out = copy_chars(attribute->name(), attribute->name() + attribute->name_size(), out);
-                    *out = Ch('='), ++out;
-                    // Print attribute value using appropriate quote type
-                    if (find_char<Ch, Ch('"')>(attribute->value(), attribute->value() + attribute->value_size()))
-                    {
-                        *out = Ch('\''), ++out;
-                        out = copy_and_expand_chars(attribute->value(), attribute->value() + attribute->value_size(), Ch('"'), out);
-                        *out = Ch('\''), ++out;
-                    }
-                    else
-                    {
-                        *out = Ch('"'), ++out;
-                        out = copy_and_expand_chars(attribute->value(), attribute->value() + attribute->value_size(), Ch('\''), out);
-                        *out = Ch('"'), ++out;
-                    }
-                }
-            }
-            return out;
-        }
 
-        // Print data node
-        template<class OutIt, class Ch>
-        inline OutIt print_data_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
-        {
-            assert(node->type() == node_data);
-            if (!(flags & print_no_indenting))
-                out = fill_chars(out, indent, Ch('\t'));
-            out = copy_and_expand_chars(node->value(), node->value() + node->value_size(), Ch(0), out);
-            return out;
-        }
 
-        // Print data node
-        template<class OutIt, class Ch>
-        inline OutIt print_cdata_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
-        {
-            assert(node->type() == node_cdata);
-            if (!(flags & print_no_indenting))
-                out = fill_chars(out, indent, Ch('\t'));
-            *out = Ch('<'); ++out;
-            *out = Ch('!'); ++out;
-            *out = Ch('['); ++out;
-            *out = Ch('C'); ++out;
-            *out = Ch('D'); ++out;
-            *out = Ch('A'); ++out;
-            *out = Ch('T'); ++out;
-            *out = Ch('A'); ++out;
-            *out = Ch('['); ++out;
-            out = copy_chars(node->value(), node->value() + node->value_size(), out);
-            *out = Ch(']'); ++out;
-            *out = Ch(']'); ++out;
-            *out = Ch('>'); ++out;
-            return out;
-        }
 
-        // Print element node
-        template<class OutIt, class Ch>
-        inline OutIt print_element_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
-        {
-            assert(node->type() == node_element);
 
-            // Print element name and attributes, if any
-            if (!(flags & print_no_indenting))
-                out = fill_chars(out, indent, Ch('\t'));
-            *out = Ch('<'), ++out;
-            out = copy_chars(node->name(), node->name() + node->name_size(), out);
-            out = print_attributes(out, node, flags);
-            
-            // If node is childless
-            if (node->value_size() == 0 && !node->first_node())
-            {
-                // Print childless node tag ending
-                *out = Ch('/'), ++out;
-                *out = Ch('>'), ++out;
-            }
-            else
-            {
-                // Print normal node tag ending
-                *out = Ch('>'), ++out;
-
-                // Test if node contains a single data node only (and no other nodes)
-                xml_node<Ch> *child = node->first_node();
-                if (!child)
-                {
-                    // If node has no children, only print its value without indenting
-                    out = copy_and_expand_chars(node->value(), node->value() + node->value_size(), Ch(0), out);
-                }
-                else if (child->next_sibling() == 0 && child->type() == node_data)
-                {
-                    // If node has a sole data child, only print its value without indenting
-                    out = copy_and_expand_chars(child->value(), child->value() + child->value_size(), Ch(0), out);
-                }
-                else
-                {
-                    // Print all children with full indenting
-                    if (!(flags & print_no_indenting))
-                        *out = Ch('\n'), ++out;
-                    out = print_children(out, node, flags, indent + 1);
-                    if (!(flags & print_no_indenting))
-                        out = fill_chars(out, indent, Ch('\t'));
-                }
-
-                // Print node end
-                *out = Ch('<'), ++out;
-                *out = Ch('/'), ++out;
-                out = copy_chars(node->name(), node->name() + node->name_size(), out);
-                *out = Ch('>'), ++out;
-            }
-            return out;
-        }
-
-        // Print declaration node
-        template<class OutIt, class Ch>
-        inline OutIt print_declaration_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
-        {
-            // Print declaration start
-            if (!(flags & print_no_indenting))
-                out = fill_chars(out, indent, Ch('\t'));
-            *out = Ch('<'), ++out;
-            *out = Ch('?'), ++out;
-            *out = Ch('x'), ++out;
-            *out = Ch('m'), ++out;
-            *out = Ch('l'), ++out;
-
-            // Print attributes
-            out = print_attributes(out, node, flags);
-            
-            // Print declaration end
-            *out = Ch('?'), ++out;
-            *out = Ch('>'), ++out;
-            
-            return out;
-        }
-
-        // Print comment node
-        template<class OutIt, class Ch>
-        inline OutIt print_comment_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
-        {
-            assert(node->type() == node_comment);
-            if (!(flags & print_no_indenting))
-                out = fill_chars(out, indent, Ch('\t'));
-            *out = Ch('<'), ++out;
-            *out = Ch('!'), ++out;
-            *out = Ch('-'), ++out;
-            *out = Ch('-'), ++out;
-            out = copy_chars(node->value(), node->value() + node->value_size(), out);
-            *out = Ch('-'), ++out;
-            *out = Ch('-'), ++out;
-            *out = Ch('>'), ++out;
-            return out;
-        }
-
-        // Print doctype node
-        template<class OutIt, class Ch>
-        inline OutIt print_doctype_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
-        {
-            assert(node->type() == node_doctype);
-            if (!(flags & print_no_indenting))
-                out = fill_chars(out, indent, Ch('\t'));
-            *out = Ch('<'), ++out;
-            *out = Ch('!'), ++out;
-            *out = Ch('D'), ++out;
-            *out = Ch('O'), ++out;
-            *out = Ch('C'), ++out;
-            *out = Ch('T'), ++out;
-            *out = Ch('Y'), ++out;
-            *out = Ch('P'), ++out;
-            *out = Ch('E'), ++out;
-            *out = Ch(' '), ++out;
-            out = copy_chars(node->value(), node->value() + node->value_size(), out);
-            *out = Ch('>'), ++out;
-            return out;
-        }
-
-        // Print pi node
-        template<class OutIt, class Ch>
-        inline OutIt print_pi_node(OutIt out, const xml_node<Ch> *node, int flags, int indent)
-        {
-            assert(node->type() == node_pi);
-            if (!(flags & print_no_indenting))
-                out = fill_chars(out, indent, Ch('\t'));
-            *out = Ch('<'), ++out;
-            *out = Ch('?'), ++out;
-            out = copy_chars(node->name(), node->name() + node->name_size(), out);
-            *out = Ch(' '), ++out;
-            out = copy_chars(node->value(), node->value() + node->value_size(), out);
-            *out = Ch('?'), ++out;
-            *out = Ch('>'), ++out;
-            return out;
-        }
 
     }
     //! \endcond

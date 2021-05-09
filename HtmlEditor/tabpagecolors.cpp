@@ -71,12 +71,13 @@ void TabPageColors::createPairs()
 
 TabPageColors::~TabPageColors()
 {
-    delete gridl;
+    qDebug() << "Destruktor;";
     for(auto& i: selections)
     {
         delete i.second.first;
         delete i.second.second;
     }
 
+    delete gridl;
 
 }
