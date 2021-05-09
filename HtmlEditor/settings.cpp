@@ -55,6 +55,7 @@ Settings::Settings(QWidget *parent) : QWidget(parent)
 void Settings::initPages()
 {
     pages.push_back(new TabPageColors(tab));
+    pages.push_back(new TabPageText(tab));
 }
 
 void Settings::setConfigToPages()

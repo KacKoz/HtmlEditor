@@ -29,6 +29,7 @@ void TabPageColors::setConfig(std::shared_ptr<config> conf)
     for(auto &i: selections)
     {
         i.second.second->setColor(conf->colors[i.first]);
+        //qDebug()<<i.second;
     }
 }
 

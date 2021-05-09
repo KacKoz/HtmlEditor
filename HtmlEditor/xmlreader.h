@@ -17,6 +17,7 @@ public:
 private:
     static std::shared_ptr<char[]> fileToChar(const char* filename);
     static void getColors(std::shared_ptr<config>&, rapidxml::xml_node<>*);
+    static void getText(std::shared_ptr<config>&, rapidxml::xml_node<>*);
 };
 
 #endif // XMLREADER_H

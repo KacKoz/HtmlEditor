@@ -24,6 +24,7 @@ SOURCES += \
     settings.cpp \
     syntaxhighlighter.cpp \
     tabpagecolors.cpp \
+    tabpagetext.cpp \
     tagslist.cpp \
     tagstree.cpp \
     tagsuggestion.cpp \
@@ -47,6 +48,7 @@ HEADERS += \
     settings.h \
     syntaxhighlighter.h \
     tabpagecolors.h \
+    tabpagetext.h \
     tagslist.h \
     tagstree.h \
     tagsuggestion.h \

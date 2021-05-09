@@ -35,7 +35,7 @@ public slots:
     void onSelectLine(int line);
     void writesuggestion(QString tag);
     void receivecurrentfilename(QString name);
-    void receiveWordWrap(bool);
+    //void receiveWordWrap(bool);
 
 
 private slots:

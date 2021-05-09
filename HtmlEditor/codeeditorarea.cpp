@@ -12,7 +12,7 @@ CodeEditorArea::CodeEditorArea()
     connect(lna,&LineNumberArea::selectLine ,codeeditor , &CodeEditor::onSelectLine);
     connect(codeeditor,&QPlainTextEdit::textChanged, this , &CodeEditorArea::onTextChanged);
     connect(this, &CodeEditorArea::giveCurrentFileNameMiddle, codeeditor, &CodeEditor::receivecurrentfilename);
-    connect(this, &CodeEditorArea::giveWordWrap, codeeditor, &CodeEditor::receiveWordWrap);
+    //connect(this, &CodeEditorArea::giveWordWrap, codeeditor, &CodeEditor::receiveWordWrap);
 
     hlayout = new QHBoxLayout;
     hlayout->addWidget(lna);
@@ -40,10 +40,10 @@ void CodeEditorArea::receiveCurrentFileNameMiddle(QString name)
     emit giveCurrentFileNameMiddle(name);
 }
 
-void CodeEditorArea::receiveWordWrapMiddle(bool wordwrap)
-{
-    emit giveWordWrap(wordwrap);
-}
+//void CodeEditorArea::receiveWordWrapMiddle(bool wordwrap)
+//{
+//    emit giveWordWrap(wordwrap);
+//}
 
 void CodeEditorArea::setText(const QString& text)
 {

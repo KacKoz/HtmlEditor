@@ -30,13 +30,13 @@ signals:
     void codeTextChanged();
     void newText(const QString& s);
     void giveCurrentFileNameMiddle(QString);
-    void giveWordWrap(bool);
+    //void giveWordWrap(bool);
 
 public slots:
 
     void onTextChanged();
     void receiveCurrentFileNameMiddle(QString);
-    void receiveWordWrapMiddle(bool);
+    //void receiveWordWrapMiddle(bool);
     void onConfigChanged(const std::shared_ptr<config>&);
 
 

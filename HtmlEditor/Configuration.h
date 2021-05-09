@@ -7,6 +7,7 @@
 typedef struct
 {
     std::map<QString, QString> colors;
+    std::map<QString, QString> text;
 
 } config;
 

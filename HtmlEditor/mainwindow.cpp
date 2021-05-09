@@ -63,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::filechanged, cda, &CodeEditorArea::receiveCurrentFileNameMiddle);
     connect(this, &MainWindow::stopthread, autosave, &Autosave::stopthread);
     connect(autosave, &Autosave::runsave, this, &MainWindow::autosaveRequest);
-    connect(this, &MainWindow::wordWrapChanged, cda, &CodeEditorArea::receiveWordWrapMiddle);
+    //connect(this, &MainWindow::wordWrapChanged, cda, &CodeEditorArea::receiveWordWrapMiddle);
     connect(this, &MainWindow::filechanged, this, &MainWindow::fileChangedSlot);
 
     //codeeditor->connect(codeeditor,SIGNAL("textchanged()"),qDebug()<<"jfdhg");
@@ -414,10 +414,10 @@ void MainWindow::autosaveRequest()
 
 
 
-void MainWindow::on_actionWord_wrap_toggled(bool arg1)
-{
-    emit wordWrapChanged(arg1);
-}
+//void MainWindow::on_actionWord_wrap_toggled(bool arg1)
+//{
+//    emit wordWrapChanged(arg1);
+//}
 
 void MainWindow::fileChangedSlot(QString name)
 {

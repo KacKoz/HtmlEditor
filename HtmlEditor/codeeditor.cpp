@@ -219,7 +219,17 @@ void CodeEditor::writesuggestion(QString tag)
 
 void CodeEditor::setConfig(const std::shared_ptr<config> &conf)
 {
+    this->blockSignals(true);
     this->sh->setConfig(conf);
+    for(const auto& i: conf->text)
+    {
+        qDebug()<<i.second;
+        if(i.second.toInt())
+            this->setLineWrapMode(LineWrapMode::WidgetWidth);
+        else
+            this->setLineWrapMode(LineWrapMode::NoWrap);
+    }
+    this->blockSignals(false);
 }
 
 void CodeEditor::mousePressEvent(QMouseEvent *e)
@@ -234,10 +244,10 @@ void CodeEditor::receivecurrentfilename(QString name)
     emit giveFileNameToSH(name);
 }
 
-void CodeEditor::receiveWordWrap(bool wordwrap)
-{
-    if(wordwrap)
-        this->setLineWrapMode(LineWrapMode::WidgetWidth);
-    else
-        this->setLineWrapMode(LineWrapMode::NoWrap);
-}
+//void CodeEditor::receiveWordWrap(bool wordwrap)
+//{
+//    if(wordwrap)
+//        this->setLineWrapMode(LineWrapMode::WidgetWidth);
+//    else
+//        this->setLineWrapMode(LineWrapMode::NoWrap);
+//}

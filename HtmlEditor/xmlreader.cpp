@@ -39,7 +39,6 @@ std::shared_ptr<config> XMLReader::makeConfigFromFile(const char* filename)
     rapidxml::xml_node<>* n;
     n = document.first_node();
 
-
     if(!strcmp(n->name(), "config"))
     {
         n = n->first_node();
@@ -54,6 +53,18 @@ std::shared_ptr<config> XMLReader::makeConfigFromFile(const char* filename)
 
     getColors(conf, n);
 
+//    if(!strcmp(n->name(), "colors"))
+//    {
+//        n = n->first_node();
+//        qDebug()<<n->name();
+//    }
+//    else
+//    {
+//        throw std::runtime_error("No colors tag");
+//    }
+
+    getText(conf, n->next_sibling());
+
     return conf;
 }
 
@@ -65,10 +76,25 @@ void XMLReader::getColors(std::shared_ptr<config>& conf,
     {
         throw std::runtime_error("No colors tag in XML");
     }
-
     while(node)
     {
         conf->colors[node->name()] = node->value();
+        node = node->next_sibling();
+    }
+}
+
+void XMLReader::getText(std::shared_ptr<config>& conf,
+                          rapidxml::xml_node<>* node)
+{
+    node = node->first_node();
+    if(!node)
+    {
+        throw std::runtime_error("No text tag in XML");
+    }
+
+    while(node)
+    {
+        conf->text[node->name()] = node->value();
         node = node->next_sibling();
     }
 }

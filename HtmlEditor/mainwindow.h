@@ -88,7 +88,7 @@ signals:
     void directorychanged(QString);
     void currentfilename(QString);
     void stopthread(bool);
-    void wordWrapChanged(bool);
+    //void wordWrapChanged(bool);
 
 private:
     QString currentFile="";

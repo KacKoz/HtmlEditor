@@ -51,7 +51,6 @@
     <addaction name="actionParsuj"/>
     <addaction name="actionShow_hide_preview"/>
     <addaction name="actionAutosave"/>
-    <addaction name="actionWord_wrap"/>
     <addaction name="actionAdvanced_settings"/>
    </widget>
    <addaction name="menuFile"/>
@@ -189,8 +188,8 @@
    </property>
    <property name="text">
     <string>Word wrap</string>
-	</property>
-	</action>
+   </property>
+  </action>
   <action name="actionAdvanced_settings">
    <property name="text">
     <string>Advanced settings...</string>

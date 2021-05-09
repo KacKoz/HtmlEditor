@@ -10,6 +10,7 @@
 
 #include "TabPageWidget.h"
 #include "tabpagecolors.h"
+#include "tabpagetext.h"
 #include "Configuration.h"
 
 class Settings : public QWidget

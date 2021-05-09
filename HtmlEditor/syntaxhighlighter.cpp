@@ -375,7 +375,6 @@ void syntaxHighlighter::setConfig(const std::shared_ptr<config> &conf)
         col.setNamedColor(i.second);
         this->colors[i.first] = col;
     }
-
     rehighlight();
 }
 
