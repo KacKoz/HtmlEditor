@@ -81,6 +81,7 @@ void XMLReader::saveConfigToFile(const char *filename, std::shared_ptr<config>& 
 {
     rapidxml::xml_document<> document;
     rapidxml::xml_node<>* config_node = document.allocate_node(rapidxml::node_type::node_element, "config");
+
     addColors(config_node, document, config);
 
     //Tutaj dodac konfiguracje z innych zakladek w ten sam sposob

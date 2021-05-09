@@ -85,9 +85,7 @@ void Settings::cancelClicked()
 
 void Settings::closeEvent(QCloseEvent *event)
 {
-    qDebug() << "Closing settings";
     setConfigToPages();
-
     QWidget::closeEvent(event);
 }
 
@@ -99,10 +97,8 @@ Settings::~Settings()
     delete apply;
     delete cancel;
 
-
     for(auto i: pages)
     {
-
         delete i;
     }
 
